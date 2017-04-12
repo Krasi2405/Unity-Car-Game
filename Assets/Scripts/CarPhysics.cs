@@ -26,6 +26,7 @@ public class CarPhysics : MonoBehaviour {
     private bool gas;
     private bool brake_left = true;
     private float last_brake_tick;
+    private ParticleSystem smoke;
     
 
 	// Use this for initialization
@@ -34,6 +35,8 @@ public class CarPhysics : MonoBehaviour {
         rb.mass = weight;
         rb.angularDrag = angularDrag;
         rb.drag = linearDrag;
+        smoke = GetComponentInChildren<ParticleSystem>();
+        smoke.Stop();
 	}
 
     void FixedUpdate()
@@ -60,6 +63,10 @@ public class CarPhysics : MonoBehaviour {
         }
         hit_points -= force;
         print(gameObject.name + " Collided for " + force + " damage ");
+
+        if(hit_points <= 40) {
+            smoke.Play();
+        }
     }
 
     void BasicMovementControls()
