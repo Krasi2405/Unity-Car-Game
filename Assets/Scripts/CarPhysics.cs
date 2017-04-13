@@ -13,6 +13,7 @@ public class CarPhysics : MonoBehaviour {
     public float max_speed = 100f;
     public float brake_difference = 2f;
     public float torque_coefficient = 1f;
+    public float brake_turbulence_coefficient = 1f;
     public bool controlled_by_player = false;
 
     public KeyCode forward;
@@ -43,26 +44,57 @@ public class CarPhysics : MonoBehaviour {
     {
         BasicMovementControls();
         curr_speed = rb.velocity.sqrMagnitude;
-
-
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
         GameObject collidedWith = collision.gameObject;
-        float force;
+        float force = 1f;
+        float angle = Vector3.Angle(gameObject.transform.position - collidedWith.transform.position, gameObject.transform.up);
+        float hit_coefficient = 1f;
+
+        print("Angle between " + gameObject.name + " and " + collidedWith.name + " is : " + angle);
+
+        for (int i = 0; i < angle; i++)
+        {
+            if(i <= 30 || i >= 150)
+            {
+                hit_coefficient += 0.1f;
+            }
+            else if(i >= 60 && i <= 90)
+            {
+                hit_coefficient += 0.1f;
+            }
+            else if(i >= 90 && i <= 120)
+            {
+                hit_coefficient -= 0.1f;
+            }
+            else
+            {
+                hit_coefficient -= 0.1f;
+            }
+        }
+        print("Hit coefficient is: " + hit_coefficient);
+        
         try
         {
             force =
-                Mathf.Clamp(collidedWith.GetComponent<Rigidbody2D>().mass / rb.mass, 0.5f, 1.5f)
-                * (collidedWith.GetComponent<CarPhysics>().curr_speed / 4 + curr_speed / 4);
+               (collidedWith.GetComponent<CarPhysics>().curr_speed / 8 + curr_speed / 4) *
+                hit_coefficient;
         }
         catch(MissingComponentException)
         {
-            force = Mathf.Clamp(1 / rb.mass, 0.5f, 1.5f) * curr_speed / 2;
+            force = Mathf.Clamp(1 / rb.mass, 0.5f, 1.5f) * curr_speed / 4;
         }
+
+        if (force <= 0)
+        {
+            force = Random.Range(1, 5);
+        }
+
         hit_points -= force;
         print(gameObject.name + " Collided for " + force + " damage ");
+
 
         if(hit_points <= 40) {
             smoke.Play();
@@ -102,21 +134,21 @@ public class CarPhysics : MonoBehaviour {
             }
             if (Input.GetKey(back))
             {
-                if (curr_velocity > 10)
+                if (curr_velocity > max_speed / 3)
                 {
                     Vector3 brake_rotate = Vector3.zero;
                     if (brake_left && last_brake_tick >= 0.2)
                     {
-                        brake_rotate.z = brake_difference + Random.Range(-brake_difference / 5, brake_difference / 5);
+                        brake_rotate.z = brake_difference + Random.Range(-brake_difference * brake_turbulence_coefficient, brake_difference * brake_turbulence_coefficient);
                         brake_left = false;
                     }
                     else if (!brake_left && last_brake_tick >= 0.2)
                     {
-                        brake_rotate.z = -(brake_difference + Random.Range(-brake_difference / 5, brake_difference / 5));
+                        brake_rotate.z = -(brake_difference + Random.Range(-brake_difference * brake_turbulence_coefficient, brake_difference * brake_turbulence_coefficient));
                         brake_left = true;
                     }
                     transform.Rotate(brake_rotate);
-                    rb.AddForce(transform.up * -acceleration / brake_force);
+                    rb.AddForce((transform.up * -acceleration) * brake_force);
                 }
                 else
                 {
