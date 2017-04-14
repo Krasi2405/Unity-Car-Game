@@ -59,19 +59,19 @@ public class CarPhysics : MonoBehaviour {
         {
             if(i <= 30 || i >= 150)
             {
-                hit_coefficient += 0.1f;
+                hit_coefficient += 0.05f;
             }
             else if(i >= 60 && i <= 90)
             {
-                hit_coefficient += 0.1f;
+                hit_coefficient += 0.08f;
             }
             else if(i >= 90 && i <= 120)
             {
-                hit_coefficient -= 0.1f;
+                hit_coefficient -= 0.08f;
             }
             else
             {
-                hit_coefficient -= 0.1f;
+                hit_coefficient -= 0.05f;
             }
         }
         print("Hit coefficient is: " + hit_coefficient);
