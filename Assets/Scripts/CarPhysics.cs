@@ -59,16 +59,20 @@ public class CarPhysics : MonoBehaviour {
         {
             force =
                (collidedWith.GetComponent<CarPhysics>().curr_speed / 8 + curr_speed / 4) *
-                hit_coefficient;
+                hit_coefficient / 3;
         }
         catch(MissingComponentException)
         {
-            force = Mathf.Clamp(1 / rb.mass, 0.5f, 1.5f) * curr_speed / 4;
+            force = curr_speed / 50;
+        }
+        catch(System.NullReferenceException)
+        {
+            force = curr_speed / 50;
         }
 
-        if (force <= 0)
+        if (force <= 0.1)
         {
-            force = Random.Range(1, 5);
+            force = Random.Range(1, 4);
         }
 
         hit_points -= force;
@@ -115,13 +119,13 @@ public class CarPhysics : MonoBehaviour {
                 if (curr_velocity > 5)
                 {
                     Vector2 brake_direction = new Vector2(
-                        transform.up.x * rb.velocity.normalized.x,
-                        transform.up.y * rb.velocity.normalized.y);
-                    rb.AddForce((brake_direction) * -acceleration * brake_force / 5);
+                        (transform.up.x + rb.velocity.normalized.x) / 2,
+                        (transform.up.y + rb.velocity.normalized.y) / 2);
+                    rb.AddForce(brake_direction * -acceleration * brake_force / 5);
                 }
                 else
                 {
-                    rb.AddForce(transform.up * -acceleration / 1.5f);
+                    rb.AddForce(transform.up * -acceleration);
                 }
 
                 rb.angularDrag = angularDrag;
