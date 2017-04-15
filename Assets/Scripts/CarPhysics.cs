@@ -5,12 +5,13 @@ using UnityEngine;
 public class CarPhysics : MonoBehaviour
 {
 
-    public float acceleration = 15f;
+    public float power = 15f;
     public float angularDrag = 3f;
     public float linearDrag = 2f;
     public float weight = 2f;
     public float brake_force = 2f;
-    public float hit_points = 100;
+    public float max_health = 100;
+    public float curr_health = 100;
     public float max_speed = 100f;
     public float torque_coefficient = 1f;
     public bool controlled_by_player = false;
@@ -25,6 +26,7 @@ public class CarPhysics : MonoBehaviour
     private Rigidbody2D rb;
     private bool gas;
     private ParticleSystem smoke;
+    private Vector2 velocity_direction;
 
 
     // Use this for initialization
@@ -35,12 +37,19 @@ public class CarPhysics : MonoBehaviour
         rb.angularDrag = angularDrag;
         rb.drag = linearDrag;
         rb.gravityScale = 0f;
+
         smoke = GetComponentInChildren<ParticleSystem>();
         smoke.Stop();
+
+        curr_health = max_health;
     }
 
     void FixedUpdate()
     {
+        if(curr_health > max_health)
+        {
+            curr_health = max_health;
+        }
         BasicMovementControls();
         curr_speed = rb.velocity.sqrMagnitude;
     }
@@ -77,11 +86,11 @@ public class CarPhysics : MonoBehaviour
             force = Random.Range(1, 4);
         }
 
-        hit_points -= force;
+        curr_health -= force;
         print(gameObject.name + " Collided for " + force + " damage ");
 
 
-        if (hit_points <= 40)
+        if (curr_health <= 40)
         {
             smoke.Play();
         }
@@ -90,6 +99,10 @@ public class CarPhysics : MonoBehaviour
     void BasicMovementControls()
     {
         float curr_velocity = rb.velocity.sqrMagnitude;
+        velocity_direction = new Vector2(
+                        (transform.up.x + rb.velocity.normalized.x) / 2,
+                        (transform.up.y + rb.velocity.normalized.y) / 2).normalized;
+
         if (controlled_by_player)
         {
             if (Input.GetKey(left))
@@ -104,11 +117,7 @@ public class CarPhysics : MonoBehaviour
             {
                 if (curr_velocity < max_speed)
                 {
-                    rb.AddForce(transform.up * acceleration);
-                }
-                else
-                {
-                    rb.AddForce(transform.up * acceleration / 4);
+                    rb.AddForce(transform.up * power);
                 }
                 gas = true;
             }
@@ -121,14 +130,12 @@ public class CarPhysics : MonoBehaviour
                 rb.angularDrag *= 1.5f;
                 if (curr_velocity > 5)
                 {
-                    Vector2 brake_direction = new Vector2(
-                        (transform.up.x + rb.velocity.normalized.x) / 2,
-                        (transform.up.y + rb.velocity.normalized.y) / 2);
-                    rb.AddForce(brake_direction * -acceleration * brake_force / 5);
+                    Vector2 brake_direction = velocity_direction;
+                    rb.AddForce(brake_direction * -power * (brake_force / 10));
                 }
                 else
                 {
-                    rb.AddForce(transform.up * -acceleration);
+                    rb.AddForce(transform.up * -power);
                 }
 
                 rb.angularDrag = angularDrag;
@@ -144,11 +151,11 @@ public class CarPhysics : MonoBehaviour
 
         for (int i = 0; i < speed; i++)
         {
-            if (i < 8 && i >= 3)
+            if (i < 7 && i >= 2)
             {
                 torque += 0.2f * torque_coefficient;
             }
-            else if (i >= 8 && i < max_speed / 2)
+            else if (i >= 7 && i < max_speed / 2)
             {
                 torque += 0.03f * torque_coefficient;
             }
