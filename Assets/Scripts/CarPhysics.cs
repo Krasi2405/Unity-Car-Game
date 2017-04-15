@@ -54,23 +54,31 @@ public class CarPhysics : MonoBehaviour
 
         print("Angle between " + gameObject.name + " and " + collidedWith.name + " is : " + angle);
 
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> Experimental_Brakes
         print("Hit coefficient is: " + hit_coefficient);
 
         try
         {
             force =
                (collidedWith.GetComponent<CarPhysics>().curr_speed / 8 + curr_speed / 4) *
-                hit_coefficient;
+                hit_coefficient / 3;
         }
         catch (MissingComponentException)
         {
-            force = Mathf.Clamp(1 / rb.mass, 0.5f, 1.5f) * curr_speed / 4;
+            force = curr_speed / 50;
+        }
+        catch(System.NullReferenceException)
+        {
+            force = curr_speed / 50;
         }
 
-        if (force <= 0)
+        if (force <= 0.1)
         {
-            force = Random.Range(1, 5);
+            force = Random.Range(1, 4);
         }
 
         hit_points -= force;
@@ -114,14 +122,28 @@ public class CarPhysics : MonoBehaviour
             }
             if (Input.GetKey(back))
             {
-                if (curr_velocity > max_speed / 3)
+                rb.angularDrag *= 1.5f;
+                if (curr_velocity > 5)
                 {
+<<<<<<< HEAD
                     rb.AddForce((transform.up * -acceleration) * brake_force);
+=======
+                    Vector2 brake_direction = new Vector2(
+                        (transform.up.x + rb.velocity.normalized.x) / 2,
+                        (transform.up.y + rb.velocity.normalized.y) / 2);
+                    rb.AddForce(brake_direction * -acceleration * brake_force / 5);
+>>>>>>> Experimental_Brakes
                 }
                 else
                 {
-                    rb.AddForce(transform.up * -acceleration / 3);
+                    rb.AddForce(transform.up * -acceleration);
                 }
+<<<<<<< HEAD
+=======
+
+                rb.angularDrag = angularDrag;
+                rb.drag = linearDrag;
+>>>>>>> Experimental_Brakes
             }
         }
     }
@@ -133,6 +155,7 @@ public class CarPhysics : MonoBehaviour
 
         for (int i = 0; i < speed; i++)
         {
+<<<<<<< HEAD
             if (i < 8 && i >= 3)
             {
                 torque += 0.2f * torque_coefficient;
@@ -142,6 +165,17 @@ public class CarPhysics : MonoBehaviour
                 torque += 0.03f * torque_coefficient;
             }
             else if (i >= (max_speed / 2))
+=======
+            if(i < 8 && i >= 3)
+            {
+                torque += 0.2f * torque_coefficient;
+            }
+            else if(i >= 8 && i < max_speed / 2)
+            {
+                torque += 0.03f * torque_coefficient;
+            }
+            else if(i >= (max_speed / 2) )
+>>>>>>> Experimental_Brakes
             {
                 torque -= 0.04f * torque_coefficient;
             }
