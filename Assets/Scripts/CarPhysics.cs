@@ -9,24 +9,24 @@ public class CarPhysics : MonoBehaviour
     public float angularDrag = 3f;
     public float linearDrag = 2f;
     public float weight = 2f;
-    public float brake_force = 2f;
-    public float max_health = 100;
-    public float curr_health = 100;
-    public float max_speed = 100f;
-    public float torque_coefficient = 1f;
-    public bool controlled_by_player = false;
+    public float brakeForce = 2f;
+    public float maxHealth = 100;
+    public float currentHealth = 100;
+    public float maxSpeed = 100f;
+    public float turnPower = 1f;
+    public bool controlledByPlayer = false;
 
     public KeyCode forward;
     public KeyCode back;
     public KeyCode left;
     public KeyCode right;
 
-    public float curr_speed { get; private set; }
+    public float currentVelocity { get; private set; }
 
     private Rigidbody2D rb;
     private bool gas;
     private ParticleSystem smoke;
-    private Vector2 velocity_direction;
+    private Vector2 velocityDirection;
 
 
     // Use this for initialization
@@ -41,17 +41,19 @@ public class CarPhysics : MonoBehaviour
         smoke = GetComponentInChildren<ParticleSystem>();
         smoke.Stop();
 
-        curr_health = max_health;
+        currentHealth = maxHealth;
     }
 
     void FixedUpdate()
     {
-        if(curr_health > max_health)
+        currentVelocity = rb.velocity.sqrMagnitude;
+        if (currentHealth > maxHealth)
         {
-            curr_health = max_health;
+            currentHealth = maxHealth;
         }
+        gas = false;
         BasicMovementControls();
-        curr_speed = rb.velocity.sqrMagnitude;
+        
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -59,87 +61,81 @@ public class CarPhysics : MonoBehaviour
         GameObject collidedWith = collision.gameObject;
         float force = 1f;
         float angle = Vector3.Angle(gameObject.transform.position - collidedWith.transform.position, gameObject.transform.up);
-        float hit_coefficient = GetHitCoefficient(angle);
+        float hitCoefficient = GetHitCoefficient(angle);
 
         print("Angle between " + gameObject.name + " and " + collidedWith.name + " is : " + angle);
 
 
-        print("Hit coefficient is: " + hit_coefficient);
+        print("Hit coefficient is: " + hitCoefficient);
 
         try
         {
             force =
-               (collidedWith.GetComponent<CarPhysics>().curr_speed / 8 + curr_speed / 4) *
-                hit_coefficient / 3;
+               (collidedWith.GetComponent<CarPhysics>().currentVelocity / 8 + currentVelocity / 4) *
+                hitCoefficient;
         }
         catch (MissingComponentException)
         {
-            force = curr_speed / 50;
+            force = currentVelocity / 20;
         }
         catch (System.NullReferenceException)
         {
-            force = curr_speed / 50;
+            force = currentVelocity / 20;
         }
 
-        if (force <= 0.1)
+        if (force <= 0.2)
         {
-            force = Random.Range(1, 4);
+            force = Random.Range(50, 2500) / 1000f;
         }
 
-        curr_health -= force;
-        print(gameObject.name + " Collided for " + force + " damage ");
+        currentHealth -= force / 3;
+        print(gameObject.name + " Collided for " + force / 3 + " damage ");
 
 
-        if (curr_health <= 40)
-        {
-            smoke.Play();
-        }
+        SmokeState();
     }
 
     void BasicMovementControls()
     {
-        float curr_velocity = rb.velocity.sqrMagnitude;
-        velocity_direction = new Vector2(
+        float currentVelocity = rb.velocity.sqrMagnitude;
+        // Get the vector that is between the vector that is pointing upwards
+        // from the car and the vector which points the direction the car is moving
+        velocityDirection = new Vector2(
                         (transform.up.x + rb.velocity.normalized.x) / 2,
                         (transform.up.y + rb.velocity.normalized.y) / 2).normalized;
 
-        if (controlled_by_player)
+        if (controlledByPlayer)
         {
             if (Input.GetKey(left))
             {
                 rb.AddTorque(GetTorque());
             }
-            if (Input.GetKey(right))
+            else if (Input.GetKey(right))
             {
                 rb.AddTorque(-GetTorque());
             }
             if (Input.GetKey(forward))
             {
-                if (curr_velocity < max_speed)
+                if (currentVelocity < maxSpeed)
                 {
                     rb.AddForce(transform.up * power);
                 }
+                // When gas is true its harder to turn the car.
                 gas = true;
-            }
-            else
-            {
-                gas = false;
             }
             if (Input.GetKey(back))
             {
-                rb.angularDrag *= 1.5f;
-                if (curr_velocity > 5)
+                // Brakes
+                if (currentVelocity > 5)
                 {
-                    Vector2 brake_direction = velocity_direction;
-                    rb.AddForce(brake_direction * -power * (brake_force / 10));
+                    Vector2 brake_direction = velocityDirection;
+                    rb.AddForce(brake_direction * -power * (brakeForce / 10));
                 }
+                // Reverse movement
                 else
                 {
                     rb.AddForce(transform.up * -power);
                 }
-
-                rb.angularDrag = angularDrag;
-                rb.drag = linearDrag;
             }
         }
     }
@@ -153,15 +149,15 @@ public class CarPhysics : MonoBehaviour
         {
             if (i < 7 && i >= 2)
             {
-                torque += 0.2f * torque_coefficient;
+                torque += 0.2f * turnPower;
             }
-            else if (i >= 7 && i < max_speed / 2)
+            else if (i >= 7 && i < maxSpeed / 2)
             {
-                torque += 0.03f * torque_coefficient;
+                torque += 0.03f * turnPower;
             }
-            else if (i >= (max_speed / 2))
+            else if (i >= (maxSpeed / 2))
             {
-                torque -= 0.04f * torque_coefficient;
+                torque -= 0.04f * turnPower;
             }
         }
 
@@ -196,5 +192,17 @@ public class CarPhysics : MonoBehaviour
             }
         }
         return hit_coefficient;
+    }
+
+    public void SmokeState()
+    {
+        if (currentHealth <= maxHealth / 2)
+        {
+            smoke.Play();
+        }
+        else
+        {
+            smoke.Stop();
+        }
     }
 }
