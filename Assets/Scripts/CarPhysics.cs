@@ -11,9 +11,11 @@ public class CarPhysics : MonoBehaviour
     public float weight = 2f;
     public float brakeForce = 2f;
     public float maxHealth = 100;
-    public float currentHealth = 100;
+    public float currentHealth;
     public float maxSpeed = 100f;
     public float turnPower = 1f;
+    public int maxAmmo = 10;
+    public int currentAmmo;
     public bool controlledByPlayer = false;
 
     public KeyCode forward;
@@ -42,6 +44,7 @@ public class CarPhysics : MonoBehaviour
         smoke.Stop();
 
         currentHealth = maxHealth;
+        currentAmmo = maxAmmo;
     }
 
     void FixedUpdate()
@@ -51,6 +54,12 @@ public class CarPhysics : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
+
+        if(currentAmmo > maxAmmo)
+        {
+            currentAmmo = maxAmmo;
+        }
+
         gas = false;
         BasicMovementControls();
         
@@ -138,6 +147,20 @@ public class CarPhysics : MonoBehaviour
                 }
             }
         }
+    }
+
+    public bool CanConsumeAmmo(int ammo)
+    {
+        if (ammo > currentAmmo)
+        {
+            return false;
+        }
+        else
+        {
+            currentAmmo -= ammo;
+            return true;
+        }
+                
     }
 
     float GetTorque()
