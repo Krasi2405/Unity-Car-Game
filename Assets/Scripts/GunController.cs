@@ -8,6 +8,8 @@ public class GunController : MonoBehaviour {
     public float destroyTime = 5f;
     public float fireDelay = 1f;
     public float projectileSpeed = 5f;
+    public float shotDeviation = 1f;
+    public float recoil = 5f;
     public GameObject projectilePrefab;
     public KeyCode activationKey = KeyCode.Space;
 
@@ -40,11 +42,22 @@ public class GunController : MonoBehaviour {
 
     void Fire(Vector3 position)
     {
-        
-        GameObject shot = Instantiate(projectilePrefab, position, car.transform.rotation) as GameObject;
-        float speedCoefficient = Mathf.Clamp(car.GetComponent<CarPhysics>().currentVelocity / car.GetComponent<CarPhysics>().maxSpeed, 0.25f, 1);
-        shot.GetComponent<Rigidbody2D>().velocity = car.transform.up * projectileSpeed * speedCoefficient;
+        Vector3 deviatedShotRotation = car.transform.rotation.eulerAngles;
+        deviatedShotRotation.z += Random.Range(-shotDeviation, shotDeviation);
+
+        GameObject shot = Instantiate(projectilePrefab, position, Quaternion.Euler(deviatedShotRotation)) as GameObject;
+        float speedCoefficient = Mathf.Clamp(car.GetComponent<CarPhysics>().currentVelocity / car.GetComponent<CarPhysics>().maxSpeed, 0.75f, 1);
+
+        // Shot deviation
+        Transform shotTransform = car.transform;
+        shotTransform.rotation = Quaternion.Euler(deviatedShotRotation);
+        shot.GetComponent<Rigidbody2D>().velocity = shotTransform.up * projectileSpeed * speedCoefficient;
+
         shot.GetComponent<Projectile>().parent = car;
+        
+        // Recoil
+        car.GetComponent<Rigidbody2D>().AddForce(-car.transform.up * recoil);
+
         Destroy(shot, destroyTime);
         print("Shot fired from " + car.name + " with " + car.transform.up * projectileSpeed + " velocity");
     }

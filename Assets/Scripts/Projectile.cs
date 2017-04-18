@@ -8,7 +8,7 @@ public class Projectile : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (parent != collision.gameObject)
+        if (parent != collision.gameObject && collision.gameObject.tag != "Shot")
         {
             try
             {
