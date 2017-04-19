@@ -53,6 +53,7 @@ public class GunController : MonoBehaviour {
         shotTransform.rotation = Quaternion.Euler(deviatedShotRotation);
         shot.GetComponent<Rigidbody2D>().velocity = shotTransform.up * projectileSpeed * speedCoefficient;
 
+        // Set the parent of the shot so it doesnt target the car that it shot from.
         shot.GetComponent<Projectile>().parent = car;
         
         // Recoil
