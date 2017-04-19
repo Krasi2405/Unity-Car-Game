@@ -13,8 +13,8 @@ public class GunController : MonoBehaviour {
     public GameObject projectilePrefab;
     public KeyCode activationKey = KeyCode.Space;
 
-    private GameObject car;
-    private float currentDelay;
+    protected GameObject car;
+    protected float currentDelay = 0;
 
 
 	void Start () {
