@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class GameStateManager : MonoBehaviour {
 
-    public string playerOneCar;
-    public string playerOneGun;
-    public string playerTwoCar;
-    public string playerTwoGun;
-
-    void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
+    public static string playerOneCar = "Pickup Truck";
+    public static string playerOneGun = "Laser Gun";
+    public static string playerTwoCar = "Race Car";
+    public static string playerTwoGun = "Shell Gun";
 
     public void SetPlayerOneCar(string carName)
     {

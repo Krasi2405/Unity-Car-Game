@@ -229,4 +229,10 @@ public class CarPhysics : MonoBehaviour
             smoke.Stop();
         }
     }
+
+    // Draw a circle around where the weapon is going to be placed.
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(gunPosition + transform.position, 0.15f);
+    }
 }
