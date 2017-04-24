@@ -17,6 +17,7 @@ public class CarPhysics : MonoBehaviour
     public int maxAmmo = 10;
     public int currentAmmo;
     public bool controlledByPlayer = false;
+    public Vector3 gunPosition;
 
     public KeyCode forward;
     public KeyCode back;

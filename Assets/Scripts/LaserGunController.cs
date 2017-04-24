@@ -20,7 +20,7 @@ public class LaserGunController : GunController {
                 shot = Instantiate(projectilePrefab, child.position, Quaternion.identity) as GameObject;
                 shot.GetComponent<Projectile>().parent = car;
             }
-            else if (Input.GetKey(activationKey))
+            else if (Input.GetKey(activationKey) && shot != null)
             {
                 // Grow the ball
                 Vector3 scale = shot.transform.localScale;
@@ -34,11 +34,9 @@ public class LaserGunController : GunController {
                 if (currentSeconds >= maxSeconds)
                 {
                     Fire();
-
                 }
-
             }
-            else if (Input.GetKeyUp(activationKey))
+            else if (Input.GetKeyUp(activationKey) && shot != null)
             {
                 // Shoot the ball
                 Fire();
@@ -55,6 +53,7 @@ public class LaserGunController : GunController {
         float speedCoefficient = Mathf.Clamp(car.GetComponent<CarPhysics>().currentVelocity / car.GetComponent<CarPhysics>().maxSpeed, 0.75f, 1);
         shot.GetComponent<Rigidbody2D>().velocity = car.transform.up * projectileSpeed * speedCoefficient;
         Destroy(shot, destroyTime);
+        shot = null;
         currentSeconds = 0;
         currentDelay = 0;
     }
