@@ -22,8 +22,9 @@ public class Projectile : MonoBehaviour {
                 if (collision.gameObject.tag == "Boost")
                 {
                     Destroy(collision.gameObject, 0.1f);
+                    Destroy(gameObject);
                 }
-                Destroy(gameObject);
+                
             }
             catch(System.NullReferenceException)
             {
@@ -31,8 +32,8 @@ public class Projectile : MonoBehaviour {
                 if (collision.gameObject.tag == "Boost")
                 {
                     Destroy(collision.gameObject, 0.1f);
+                    Destroy(gameObject);
                 }
-                Destroy(gameObject);
             }
         }
     }
