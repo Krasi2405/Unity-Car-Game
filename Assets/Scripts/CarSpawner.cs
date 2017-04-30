@@ -20,17 +20,21 @@ public class CarSpawner : MonoBehaviour {
     public DisplayHealthBar hitpointsBarOne;
     public DisplayHealthBar hitpointsBarTwo;
 
+    public GameOver gameOverManager;
+
     void Start () {
         // Instantiate Car 1
-        SpawnCar(GameStateManager.playerOneCar, GameStateManager.playerOneGun, new Vector2(-5, -5), 
+        GameObject carOne = SpawnCar(GameStateManager.playerOneCar, GameStateManager.playerOneGun, new Vector2(-5, -5), 
             playerOneForward, playerOneLeft, playerOneRight, playerOneBackwards, playerOneShoot, hitpointsBarOne);
+        gameOverManager.car1 = carOne.GetComponent<CarPhysics>();
 
         // Instantiate Car 2
-        SpawnCar(GameStateManager.playerTwoCar, GameStateManager.playerTwoGun, new Vector2(5, 5), 
+        GameObject carTwo = SpawnCar(GameStateManager.playerTwoCar, GameStateManager.playerTwoGun, new Vector2(5, 5), 
             playerTwoForward, playerTwoLeft, playerTwoRight, playerTwoBackwards, playerTwoShoot, hitpointsBarTwo);
+        gameOverManager.car2 = carTwo.GetComponent<CarPhysics>();
     }
 
-    void SpawnCar(string carName, string gunName, Vector3 spawnLocation, KeyCode forward, KeyCode left, KeyCode right, KeyCode backwards, KeyCode gunActivation, DisplayHealthBar hpBar)
+    GameObject SpawnCar(string carName, string gunName, Vector3 spawnLocation, KeyCode forward, KeyCode left, KeyCode right, KeyCode backwards, KeyCode gunActivation, DisplayHealthBar hpBar)
     {
         GameObject carPrefab;
         try
@@ -40,7 +44,7 @@ public class CarSpawner : MonoBehaviour {
         catch (System.ArgumentException)
         {
             print(carName + " could not be found.");
-            return;
+            return null;
         }
         GameObject car = Instantiate(carPrefab, spawnLocation, Quaternion.identity);
         
@@ -54,6 +58,8 @@ public class CarSpawner : MonoBehaviour {
         // Spawn the gun.
         SpawnGun(gunName, car, gunActivation);
         hpBar.car = car;
+
+        return car;
     }
 
     void SpawnGun(string prefabName, GameObject carParent, KeyCode activationKey)
