@@ -14,6 +14,12 @@ public class DisplayGunInfo : MonoBehaviour
     void Start()
     {
         textCarInfo = gameObject.transform.GetChild(0);
+
+        UpdateInfo();
+    }
+
+    public void UpdateInfo()
+    {
         gunScript = gun.GetComponent<GunController>();
 
         // Set the gun stats.
@@ -27,5 +33,6 @@ public class DisplayGunInfo : MonoBehaviour
 
         // Set the image to the image of the gun.
         gameObject.GetComponent<Image>().sprite = gun.GetComponent<SpriteRenderer>().sprite;
+
     }
 }

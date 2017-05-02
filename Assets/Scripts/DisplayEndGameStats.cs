@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class DisplayEndGameStats : MonoBehaviour {
     
+
+
     private GameOver gameOver;
     private Text text;
 

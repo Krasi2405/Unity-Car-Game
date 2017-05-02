@@ -6,26 +6,40 @@ public class GameStateManager : MonoBehaviour {
 
     public static string playerOneCar = "Pickup Truck";
     public static string playerOneGun = "Laser Gun";
-    public static string playerTwoCar = "Race Car";
-    public static string playerTwoGun = "Shell Gun";
+    public static string playerTwoCar = "Tractor";
+    public static string playerTwoGun = "Machine Gun";
 
-    public void SetPlayerOneCar(string carName)
+    public DisplayCarInfo carInfoOne;
+    public DisplayCarInfo carInfoTwo;
+    public DisplayGunInfo gunInfoOne;
+    public DisplayGunInfo gunInfoTwo;
+
+    public void SetInfo()
     {
-        playerOneCar = carName;
+        SetPlayerOneCar();
+        SetPlayerTwoCar();
+        SetPlayerOneGun();
+        SetPlayerTwoGun();
     }
 
-    public void SetPlayerTwoCar(string carName)
+
+    public void SetPlayerOneCar()
     {
-        playerTwoCar = carName;
+        playerOneCar = carInfoOne.car.name;
     }
 
-    public void SetPlayerOneGun(string gunName)
+    public void SetPlayerTwoCar()
     {
-        playerOneGun = gunName;
+        playerTwoCar = carInfoTwo.car.name;
     }
 
-    public void SetPlayerTwoGun(string gunName)
+    public void SetPlayerOneGun()
     {
-        playerTwoGun = gunName;
+        playerOneGun = gunInfoOne.gun.name;
+    }
+
+    public void SetPlayerTwoGun()
+    {
+        playerTwoGun = gunInfoTwo.gun.name;
     }
 }
