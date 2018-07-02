@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameOver : MonoBehaviour {
 
     public static int num = 0;
+    public float gameOverCooldown = 2f;
 
     public LevelManager levelManager;
     public CarPhysics car1;
@@ -34,12 +35,12 @@ public class GameOver : MonoBehaviour {
 		if(car1.currentHealth <= 0)
         {
             carOneDead = true;
-            Invoke("EndGame", 3f);
+            Invoke("EndGame", gameOverCooldown);
         }
         else if(car2.currentHealth <= 0)
         {
             carTwoDead = true;
-            Invoke("EndGame", 3f);
+            Invoke("EndGame", gameOverCooldown);
         }
 	}
 
