@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CarSpawner : MonoBehaviour {
+public class DeprecatedCarSpawner : MonoBehaviour {
 
+    /*
     public KeyCode playerOneForward = KeyCode.W;
     public KeyCode playerOneLeft = KeyCode.A;
     public KeyCode playerOneRight = KeyCode.D;
@@ -22,7 +23,7 @@ public class CarSpawner : MonoBehaviour {
 
     public GameOver gameOverManager;
 
-    void Start () {
+    void Awake () {
         // Instantiate Car 1
         GameObject carOne = SpawnCar(GameStateManager.playerOneCar, GameStateManager.playerOneGun, new Vector2(-5, -5), 
             playerOneForward, playerOneLeft, playerOneRight, playerOneBackwards, playerOneShoot, hitpointsBarOne);
@@ -92,4 +93,5 @@ public class CarSpawner : MonoBehaviour {
         rotation.z += 180;
         gun.transform.rotation = Quaternion.Euler(rotation);
     }
+    */
 }

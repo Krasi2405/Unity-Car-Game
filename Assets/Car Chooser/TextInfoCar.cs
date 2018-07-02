@@ -1,27 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class DisplayCarInfo : MonoBehaviour {
 
-    public GameObject car;
+public class TextInfoCar : TextInfoBase
+{
 
-    private Transform textCarInfo;
-    private CarPhysics carScript;
-
-	void Start()
+    public override string GetInformation()
     {
-        textCarInfo = gameObject.transform.GetChild(0);
-        
-
-        UpdateInfo();
-    }
-
-    public void UpdateInfo()
-    {
-        carScript = car.GetComponent<CarPhysics>();
-        // Set the car stats.
+        CarPhysics carScript = GetComponent<CarPhysics>();
         string carInfo = "";
         carInfo += "Engine Power " + carScript.power + "\n";
         carInfo += "Linear Drag  " + carScript.linearDrag + "\n";
@@ -31,10 +18,6 @@ public class DisplayCarInfo : MonoBehaviour {
         carInfo += "Max speed    " + carScript.maxSpeed + "\n";
         carInfo += "Ammo         " + carScript.maxAmmo + "\n";
         carInfo += "HP:          " + carScript.maxHealth + "\n";
-        textCarInfo.gameObject.GetComponent<Text>().text = carInfo;
-
-        // Set the image to the image of the car.
-        gameObject.GetComponent<Image>().sprite = car.GetComponent<SpriteRenderer>().sprite;
-
+        return carInfo;
     }
 }
