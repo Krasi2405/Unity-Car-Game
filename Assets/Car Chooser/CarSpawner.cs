@@ -32,14 +32,15 @@ public class CarSpawner : MonoBehaviour {
         {
             SimulateCars();
         }
-        
+
         /* TODO
          * Create random spawnLocations if players are more than spawnLocations
         */
+       
 
-
-        foreach (CarDataTransfer carData in playersInformation)
+        for (int i = 0; i < playersInformation.Length; i++)
         {
+            CarDataTransfer carData = playersInformation[i];
             if (!carData.hasData)
             {
                 Debug.LogError(carData.name + " has no data in itself! Skipping instantiation");
@@ -69,7 +70,10 @@ public class CarSpawner : MonoBehaviour {
             gun.GetComponent<GunController>().activationKey = activationKey;
             gun.transform.SetParent(carParent.transform);
             */
+            Destroy(carData);
         }
+
+        Destroy(gameObject);
     }
 
     private void SimulateCars()

@@ -29,7 +29,11 @@ public class CarPhysics : MonoBehaviour
     private Rigidbody2D rb;
     private bool gas;
     private ParticleSystem smoke;
-    private Vector2 velocityDirection;
+
+    private Collider2D colliderLeft;
+    private Collider2D colliderRight;
+    private Collider2D colliderFront;
+    private Collider2D colliderBack;
 
 
     // Use this for initialization
@@ -63,54 +67,28 @@ public class CarPhysics : MonoBehaviour
 
         gas = false;
         BasicMovementControls();
-        
+
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    private void TakeDamage(float damage)
     {
-        GameObject collidedWith = collision.gameObject;
-        float force = 1f;
-        float angle = Vector3.Angle(gameObject.transform.position - collidedWith.transform.position, gameObject.transform.up);
-        float hitCoefficient = GetHitCoefficient(angle);
-
-        print("Angle between " + gameObject.name + " and " + collidedWith.name + " is : " + angle);
-
-
-        print("Hit coefficient is: " + hitCoefficient);
-
-        try
-        {
-            force =
-               (collidedWith.GetComponent<CarPhysics>().currentVelocity / 8 + currentVelocity / 4) *
-                hitCoefficient;
-        }
-        catch (MissingComponentException)
-        {
-            force = currentVelocity / 20;
-        }
-        catch (System.NullReferenceException)
-        {
-            force = currentVelocity / 20;
-        }
-
-        if (force <= 0.2)
-        {
-            force = Random.Range(50, 2500) / 1000f;
-        }
-
-        currentHealth -= force / 3;
-        print(gameObject.name + " Collided for " + force / 3 + " damage ");
-
-
+        currentHealth -= damage;
         SmokeState();
     }
+
+
+    public void TakeCollisionDamage(float damage)
+    {
+        TakeDamage(damage / 10);
+    }
+
 
     void BasicMovementControls()
     {
         float currentVelocity = rb.velocity.sqrMagnitude;
         // Get the vector that is between the vector that is pointing upwards
         // from the car and the vector which points the direction the car is moving
-        velocityDirection = new Vector2(
+        Vector2 velocityDirection = new Vector2(
                         (transform.up.x + rb.velocity.normalized.x) / 2,
                         (transform.up.y + rb.velocity.normalized.y) / 2).normalized;
 
@@ -193,34 +171,15 @@ public class CarPhysics : MonoBehaviour
     }
 
 
-    private float GetHitCoefficient(float angle)
-    {
-        float hit_coefficient = 1f;
-        for (int i = 0; i < angle; i++)
-        {
-            if (i <= 30 || i >= 150)
-            {
-                hit_coefficient += 0.05f;
-            }
-            else if (i >= 60 && i <= 90)
-            {
-                hit_coefficient += 0.08f;
-            }
-            else if (i >= 90 && i <= 120)
-            {
-                hit_coefficient -= 0.08f;
-            }
-            else
-            {
-                hit_coefficient -= 0.05f;
-            }
-        }
-        return hit_coefficient;
-    }
-
     public void SmokeState()
     {
-        if (currentHealth <= maxHealth / 2)
+        
+        if(currentHealth <= maxHealth / 4)
+        {
+            // TODO: Add burn effects.
+            smoke.Play();
+        }
+        else if (currentHealth <= maxHealth / 2)
         {
             smoke.Play();
         }
@@ -229,6 +188,7 @@ public class CarPhysics : MonoBehaviour
             smoke.Stop();
         }
     }
+
 
     // Draw a circle around where the weapon is going to be placed.
     void OnDrawGizmos()

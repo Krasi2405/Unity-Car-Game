@@ -31,7 +31,6 @@ public class GunController : MonoBehaviour {
             foreach(Transform child in transform)
             {
                 Vector3 position = child.position;
-                position.z = -5;
                 if(car.GetComponent<CarPhysics>().CanConsumeAmmo(ammoPerBullet))
                 {
                     Fire(position);
