@@ -18,7 +18,7 @@ public class LaserGunController : GunController {
                 // Create the ball
                 Transform child = transform.GetChild(0);
                 shot = Instantiate(projectilePrefab, child.position, Quaternion.identity) as GameObject;
-                shot.GetComponent<Projectile>().parent = car;
+                shot.GetComponent<Projectile>().carParent = car;
             }
             else if (Input.GetKey(activationKey) && shot != null)
             {

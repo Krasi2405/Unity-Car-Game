@@ -13,13 +13,13 @@ public class GunController : MonoBehaviour {
     public GameObject projectilePrefab;
     public KeyCode activationKey = KeyCode.Space;
 
-    protected GameObject car;
+    protected CarPhysics car;
     protected float currentDelay = 0;
 
 
 	void Start () {
         // The gun should always be a child of a car
-        car = gameObject.transform.parent.gameObject;
+        car = gameObject.GetComponentInParent<CarPhysics>();
 	}
 	
 	void Update () {
@@ -53,7 +53,7 @@ public class GunController : MonoBehaviour {
         shot.GetComponent<Rigidbody2D>().velocity = shotTransform.up * projectileSpeed * speedCoefficient;
 
         // Set the parent of the shot so it doesnt target the car that it shot from.
-        shot.GetComponent<Projectile>().parent = car;
+        shot.GetComponent<Projectile>().carParent = car;
         
         // Recoil
         car.GetComponent<Rigidbody2D>().AddForce(-car.transform.up * recoil);

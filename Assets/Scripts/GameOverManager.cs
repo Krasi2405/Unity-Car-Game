@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameOver : MonoBehaviour {
+public class GameOverManager : MonoBehaviour {
 
     public static int num = 0;
     public float gameOverCooldown = 2f;
 
     public LevelManager levelManager;
-    public CarPhysics car1;
-    public CarPhysics car2;
+    public CarPhysics carOne;
+    public CarPhysics carTwo;
 
     public bool carOneDead { get; private set; }
     public bool carTwoDead { get; private set; }
@@ -28,16 +28,16 @@ public class GameOver : MonoBehaviour {
     {
         carOneDead = false;
         carTwoDead = false;
-        levelManager = GameObject.Find("LevelManager").GetComponent<LevelManager>();
+        levelManager = FindObjectOfType<LevelManager>();
     }
 
     void Update () {
-		if(car1.currentHealth <= 0)
+		if(carOne.currentHealth <= 0)
         {
             carOneDead = true;
             Invoke("EndGame", gameOverCooldown);
         }
-        else if(car2.currentHealth <= 0)
+        else if(carTwo.currentHealth <= 0)
         {
             carTwoDead = true;
             Invoke("EndGame", gameOverCooldown);

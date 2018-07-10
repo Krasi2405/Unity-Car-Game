@@ -64,7 +64,7 @@ public class CarChooser : MonoBehaviour {
     private void SetCarInfo()
     {
         selectedCar = cars[carCounter];
-        dataTransferAgent.car = selectedCar;
+        dataTransferAgent.car = selectedCar;    
 
 
         if (dataTransferAgent.gun != null) {

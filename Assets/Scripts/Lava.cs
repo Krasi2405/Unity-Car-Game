@@ -6,15 +6,10 @@ public class Lava : Liquid {
 
     void OnTriggerStay2D(Collider2D collision)
     {
-        try
+        CarCollider carCollider = collision.GetComponent<CarCollider>();
+        if(carCollider)
         {
-            CarPhysics test = collision.gameObject.GetComponent<CarPhysics>();
-            test.currentHealth -= damagePerSecond * Time.deltaTime;
-
-        }
-        catch (MissingComponentException)
-        {
-
+            carCollider.TakeFireDamage(damagePerSecond * Time.deltaTime);
         }
     }
 }

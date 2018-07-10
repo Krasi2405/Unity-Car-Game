@@ -12,33 +12,23 @@ public class Liquid : MonoBehaviour {
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        try
+        CarPhysics car = collision.GetComponentInParent<CarPhysics>();
+        // Test whether its a car
+        if (car)
         {
-            GameObject car = collision.gameObject;
-            // Test whether its a car
-            CarPhysics test = car.GetComponent<CarPhysics>();
-            car.GetComponent<Rigidbody2D>().drag = test.linearDrag * linearDragIncrease;
-            car.GetComponent<Rigidbody2D>().angularDrag = test.angularDrag * angularDragIncrease;
-        }
-        catch (MissingComponentException)
-        {
-
+            car.GetComponent<Rigidbody2D>().drag = car.linearDrag * linearDragIncrease;
+            car.GetComponent<Rigidbody2D>().angularDrag = car.angularDrag * angularDragIncrease;
         }
     }
 
     void OnTriggerExit2D(Collider2D collision)
     {
-        try
+        CarPhysics car = collision.GetComponentInParent<CarPhysics>();
+        // Test whether its a car
+        if (car)
         {
-            GameObject car = collision.gameObject;
-            // Test whether its a car
-            CarPhysics test = car.GetComponent<CarPhysics>();
-            car.GetComponent<Rigidbody2D>().drag = test.linearDrag;
-            car.GetComponent<Rigidbody2D>().angularDrag = test.angularDrag;
-        }
-        catch (MissingComponentException)
-        {
-
+            car.GetComponent<Rigidbody2D>().drag = car.linearDrag;
+            car.GetComponent<Rigidbody2D>().angularDrag = car.angularDrag;
         }
     }   
 }

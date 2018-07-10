@@ -70,16 +70,10 @@ public class CarPhysics : MonoBehaviour
 
     }
 
-    private void TakeDamage(float damage)
+    public void TakeDamage(float damage)
     {
         currentHealth -= damage;
         SmokeState();
-    }
-
-
-    public void TakeCollisionDamage(float damage)
-    {
-        TakeDamage(damage / 10);
     }
 
 

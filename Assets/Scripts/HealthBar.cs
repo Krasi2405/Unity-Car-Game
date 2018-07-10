@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HealthBar : MonoBehaviour {
     
-    public GameObject car;
+    public CarPhysics car { private get; set; }
     
     private float maxHitPoints;
     private float currentHP;
@@ -13,11 +13,11 @@ public class HealthBar : MonoBehaviour {
     void Start()
     {
         maxBarHeight = gameObject.transform.lossyScale.y;
-        maxHitPoints = car.GetComponent<CarPhysics>().maxHealth;
+        maxHitPoints = car.maxHealth;
     }
 
     void Update () {
-        currentHP = car.GetComponent<CarPhysics>().currentHealth;
+        currentHP = car.currentHealth;
         float healthBarHeight = maxBarHeight / maxHitPoints * currentHP;
 
         if (healthBarHeight < 0)

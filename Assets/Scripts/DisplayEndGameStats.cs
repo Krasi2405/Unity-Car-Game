@@ -5,26 +5,26 @@ using UnityEngine.UI;
 
 public class DisplayEndGameStats : MonoBehaviour {
     
-
-
-    private GameOver gameOver;
+    
+    private GameOverManager gameOverManager;
     private Text text;
 
 	void Start () {
         text = gameObject.GetComponent<Text>();
-        gameOver = GameObject.Find("GameOverManager").GetComponent<GameOver>();
+        gameOverManager = GameObject.Find("GameOverManager").GetComponent<GameOverManager>();
 
-        if (gameOver.carOneDead && gameOver.carTwoDead)
+        if (gameOverManager.carOneDead && gameOverManager.carTwoDead)
         {
             text.text = "Draw!\nBoth players have died.";
         }
-        else if (gameOver.carOneDead)
+        else if (gameOverManager.carOneDead)
         {
             text.text = "Player 2 has won!";
         }
-        else if (gameOver.carTwoDead)
+        else if (gameOverManager.carTwoDead)
         {
             text.text = "Player 1 has won!";
         }
+        Destroy(gameOverManager);
     }
 }
