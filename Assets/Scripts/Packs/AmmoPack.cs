@@ -10,7 +10,7 @@ public class AmmoPack : MonoBehaviour {
     {
         try
         {
-            CarPhysics car = collision.gameObject.GetComponent<CarPhysics>();
+            CarPhysics car = collision.GetComponent<CarCollider>().car;
             car.currentAmmo += ammoInPack;
             Destroy(gameObject);
         }

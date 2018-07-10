@@ -11,7 +11,7 @@ public class HealthPack : MonoBehaviour {
     {
         try
         {
-            CarPhysics car = collision.gameObject.GetComponent<CarPhysics>();
+            CarPhysics car = collision.GetComponent<CarCollider>().car;
             car.currentHealth += health;
             car.SmokeState();
             Destroy(gameObject);
