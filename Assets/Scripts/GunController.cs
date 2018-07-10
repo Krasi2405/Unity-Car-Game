@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class GunController : MonoBehaviour {
 
@@ -11,7 +12,8 @@ public class GunController : MonoBehaviour {
     public float shotDeviation = 1f;
     public float recoil = 5f;
     public GameObject projectilePrefab;
-    public KeyCode activationKey = KeyCode.Space;
+
+    public string activationKey = "Fire0";
 
     protected CarPhysics car;
     protected float currentDelay = 0;
@@ -25,7 +27,7 @@ public class GunController : MonoBehaviour {
 	void Update () {
         currentDelay += Time.deltaTime;
 
-		if(Input.GetKey(activationKey) && currentDelay >= fireDelay)
+		if(CrossPlatformInputManager.GetButton(activationKey) && currentDelay >= fireDelay)
         {
             currentDelay = 0;
             foreach(Transform child in transform)

@@ -65,6 +65,10 @@ public class CarSpawner : MonoBehaviour {
             GunController gun = Instantiate(gunInfo, car.transform.position + car.GetComponent<CarPhysics>().gunPosition, Quaternion.identity);
             SetGunParent(gun, car);
             // TODO: Rework whole system to include more than 2 cars. Make it a lot more dynamic
+            car.horizontalInputAxis = "Horizontal" + carData.GetIndex();
+            car.verticalInputAxis = "Vertical" + carData.GetIndex();
+            gun.activationKey = "Fire" + carData.GetIndex();
+
             if (carData.GetIndex() == 0)
             {
                 healthBarLeft.car = car;

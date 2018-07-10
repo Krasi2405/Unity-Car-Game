@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityStandardAssets.CrossPlatformInput;
 
 public class CarPhysics : MonoBehaviour
 {
@@ -19,14 +20,14 @@ public class CarPhysics : MonoBehaviour
     public bool controlledByPlayer = false;
     public Vector3 gunPosition;
 
-    public KeyCode forward;
-    public KeyCode back;
-    public KeyCode left;
-    public KeyCode right;
+    
 
     public float currentVelocity { get; private set; }
+    
+    public string horizontalInputAxis = "Horizontal0";
+    public string verticalInputAxis = "Vertical0";
 
-    private Rigidbody2D rb;
+    private Rigidbody2D rigidbody;
     private bool gas;
     private ParticleSystem smoke;
 
@@ -39,11 +40,11 @@ public class CarPhysics : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
-        rb.mass = weight;
-        rb.angularDrag = angularDrag;
-        rb.drag = linearDrag;
-        rb.gravityScale = 0f;
+        rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody.mass = weight;
+        rigidbody.angularDrag = angularDrag;
+        rigidbody.drag = linearDrag;
+        rigidbody.gravityScale = 0f;
 
         smoke = GetComponentInChildren<ParticleSystem>();
         smoke.Stop();
@@ -54,7 +55,7 @@ public class CarPhysics : MonoBehaviour
 
     void FixedUpdate()
     {
-        currentVelocity = rb.velocity.sqrMagnitude;
+        currentVelocity = rigidbody.velocity.sqrMagnitude;
         if (currentHealth > maxHealth)
         {
             currentHealth = maxHealth;
@@ -79,44 +80,47 @@ public class CarPhysics : MonoBehaviour
 
     void BasicMovementControls()
     {
-        float currentVelocity = rb.velocity.sqrMagnitude;
+        float currentVelocity = rigidbody.velocity.sqrMagnitude;
         // Get the vector that is between the vector that is pointing upwards
         // from the car and the vector which points the direction the car is moving
         Vector2 velocityDirection = new Vector2(
-                        (transform.up.x + rb.velocity.normalized.x) / 2,
-                        (transform.up.y + rb.velocity.normalized.y) / 2).normalized;
-
+                        (transform.up.x + rigidbody.velocity.normalized.x) / 2,
+                        (transform.up.y + rigidbody.velocity.normalized.y) / 2).normalized;
+        
         if (controlledByPlayer)
         {
-            if (Input.GetKey(left))
+            float horizontalInput = CrossPlatformInputManager.GetAxis(horizontalInputAxis);
+            float verticalInput = CrossPlatformInputManager.GetAxis(verticalInputAxis);
+            Debug.Log("Horizontal: " + horizontalInput + "\nVertical: " + verticalInput);
+            if (horizontalInput <= -0.05)
             {
-                rb.AddTorque(GetTorque());
+                rigidbody.AddTorque(GetTorque() * -horizontalInput);
             }
-            else if (Input.GetKey(right))
+            else if (horizontalInput >= 0.05)
             {
-                rb.AddTorque(-GetTorque());
+                rigidbody.AddTorque(-GetTorque() * horizontalInput);
             }
-            if (Input.GetKey(forward))
+            if (verticalInput >= 0.05)
             {
                 if (currentVelocity < maxSpeed)
                 {
-                    rb.AddForce(transform.up * power);
+                    rigidbody.AddForce(transform.up * power * verticalInput);
                 }
                 // When gas is true its harder to turn the car.
                 gas = true;
             }
-            if (Input.GetKey(back))
+            if (verticalInput <= -0.05)
             {
                 // Brakes
                 if (currentVelocity > 5)
                 {
                     Vector2 brake_direction = velocityDirection;
-                    rb.AddForce(brake_direction * -power * (brakeForce / 10));
+                    rigidbody.AddForce(-brake_direction * power * (brakeForce / 10) * -verticalInput);
                 }
                 // Reverse movement
                 else
                 {
-                    rb.AddForce(transform.up * -power);
+                    rigidbody.AddForce(transform.up * -power * -verticalInput);
                 }
             }
         }
@@ -138,7 +142,7 @@ public class CarPhysics : MonoBehaviour
 
     float GetTorque()
     {
-        float speed = rb.velocity.sqrMagnitude;
+        float speed = rigidbody.velocity.sqrMagnitude;
         float torque = 0f;
 
         for (int i = 0; i < speed; i++)
