@@ -11,7 +11,7 @@ public class DisplayEndGameStats : MonoBehaviour {
 
 	void Start () {
         text = gameObject.GetComponent<Text>();
-        gameOverManager = GameObject.Find("GameOverManager").GetComponent<GameOverManager>();
+        gameOverManager = FindObjectOfType<GameOverManager>();
 
         if (gameOverManager.carOneDead && gameOverManager.carTwoDead)
         {

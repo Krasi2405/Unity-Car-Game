@@ -26,6 +26,7 @@ public class CarPhysics : MonoBehaviour
     
     public string horizontalInputAxis = "Horizontal0";
     public string verticalInputAxis = "Vertical0";
+    public string specialInput = "Special";
 
     private Rigidbody2D rigidbody;
     private bool gas;
