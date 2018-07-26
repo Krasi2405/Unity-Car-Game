@@ -92,7 +92,7 @@ public class CarPhysics : MonoBehaviour
         {
             float horizontalInput = CrossPlatformInputManager.GetAxis(horizontalInputAxis);
             float verticalInput = CrossPlatformInputManager.GetAxis(verticalInputAxis);
-            Debug.Log("Horizontal: " + horizontalInput + "\nVertical: " + verticalInput);
+            // Debug.Log("Horizontal: " + horizontalInput + "\nVertical: " + verticalInput);
             if (horizontalInput <= -0.05)
             {
                 rigidbody.AddTorque(GetTorque() * -horizontalInput);
