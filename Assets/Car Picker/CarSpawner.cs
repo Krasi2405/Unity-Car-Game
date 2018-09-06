@@ -20,6 +20,14 @@ public class CarSpawner : MonoBehaviour {
     private List<SpawnLocation> spawnLocations;
     private GameOverManager gameOverManager;
 
+
+    // TODO: Move in something separate from this script.
+    [SerializeField]
+    Camera carOneCamera;
+
+    [SerializeField]
+    Camera carTwoCamera;
+
     public void Awake()
     {
         spawnLocations = FindObjectsOfType<SpawnLocation>().ToList();
@@ -73,11 +81,13 @@ public class CarSpawner : MonoBehaviour {
             {
                 healthBarLeft.car = car;
                 gameOverManager.carOne = car;
+                carOneCamera.GetComponent<FollowCamera>().obj = car.gameObject;
             }
             else if (carData.GetIndex() == 1)
             {
                 healthBarRight.car = car;
                 gameOverManager.carTwo = car;
+                carTwoCamera.GetComponent<FollowCamera>().obj = car.gameObject;
             }
             else
             {
@@ -140,8 +150,13 @@ public class CarSpawner : MonoBehaviour {
 
         healthBarLeft.car = carOne;
         healthBarRight.car = carTwo;
+        
         gameOverManager.carOne = carOne;
         gameOverManager.carTwo = carTwo;
+
+
+        carOneCamera.GetComponent<FollowCamera>().obj = carOne.gameObject;
+        carTwoCamera.GetComponent<FollowCamera>().obj = carTwo.gameObject;
     }
 
     private SpawnLocation GetSpawnLocation()
