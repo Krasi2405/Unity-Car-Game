@@ -189,6 +189,14 @@ public class CarPhysics : MonoBehaviour
     }
 
 
+    public void ActivateDeathSequence()
+    {
+        // TODO: activate particles.
+        Debug.LogWarning(name + " is dead!");
+        Destroy(this);
+    }
+
+
     // Draw a circle around where the weapon is going to be placed.
     void OnDrawGizmos()
     {

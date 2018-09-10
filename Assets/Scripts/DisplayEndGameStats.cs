@@ -12,19 +12,7 @@ public class DisplayEndGameStats : MonoBehaviour {
 	void Start () {
         text = gameObject.GetComponent<Text>();
         gameOverManager = FindObjectOfType<GameOverManager>();
-
-        if (gameOverManager.carOneDead && gameOverManager.carTwoDead)
-        {
-            text.text = "Draw!\nBoth players have died.";
-        }
-        else if (gameOverManager.carOneDead)
-        {
-            text.text = "Player 2 has won!";
-        }
-        else if (gameOverManager.carTwoDead)
-        {
-            text.text = "Player 1 has won!";
-        }
+        text.text = "Player " + gameOverManager.winningPlayerIndex + " wins!";
         Destroy(gameOverManager);
     }
 }

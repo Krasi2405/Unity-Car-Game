@@ -3,44 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class GameOverManager : MonoBehaviour {
-
-    public static int num = 0;
+    
     public float gameOverCooldown = 2f;
 
-    public LevelManager levelManager;
-    public CarPhysics carOne;
-    public CarPhysics carTwo;
+    public List<CarPhysics> carList;
 
-    public bool carOneDead { get; private set; }
-    public bool carTwoDead { get; private set; }
+    public int winningPlayerIndex { get; private set; }
+
+    private LevelManager levelManager;
 
     void Awake()
     {
-        if (num == 1)
-        {
-            Destroy(gameObject);
-        }
-        num++;
         DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
-        carOneDead = false;
-        carTwoDead = false;
         levelManager = FindObjectOfType<LevelManager>();
     }
 
     void Update () {
-		if(carOne.currentHealth <= 0)
+		if(carList.Count == 1)
         {
-            carOneDead = true;
-            Invoke("EndGame", gameOverCooldown);
+            winningPlayerIndex = carList[0].GetComponent<CarTag>().carTag;
+            EndGame();
         }
-        else if(carTwo.currentHealth <= 0)
+        else
         {
-            carTwoDead = true;
-            Invoke("EndGame", gameOverCooldown);
+            foreach(CarPhysics car in carList)
+            {
+                if(car.currentHealth <= 0)
+                {
+                    carList.Remove(car);
+                    car.ActivateDeathSequence();
+                }
+            }
         }
 	}
 

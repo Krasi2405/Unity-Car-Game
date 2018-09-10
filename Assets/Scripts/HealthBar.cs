@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour {
-    
-    public CarPhysics car { private get; set; }
-    
+
+    private CarPhysics car;
     private float maxHitPoints;
     private float currentHP;
     private float maxBarFilled;
@@ -21,10 +20,11 @@ public class HealthBar : MonoBehaviour {
         else
             maxBarFilled = gameObject.transform.localScale.y;
 
-        maxHitPoints = car.maxHealth;
+        
     }
 
     void Update () {
+        if (!car) return;
         currentHP = car.currentHealth;
         float healthBarFilledPercent = maxBarFilled / maxHitPoints * currentHP;
 
@@ -47,4 +47,10 @@ public class HealthBar : MonoBehaviour {
             scale = new Vector3(gameObject.transform.localScale.x, healthBarFilledPercent, 0);
         gameObject.transform.localScale = scale;
 	}
+
+    public void SetTargetCar(CarPhysics car)
+    {
+        this.car = car;
+        maxHitPoints = car.maxHealth;
+    }
 }

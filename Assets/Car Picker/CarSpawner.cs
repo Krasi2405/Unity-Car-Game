@@ -1,32 +1,21 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CarSpawner : MonoBehaviour {
-    
-    private bool ableToSpawnCars = false;
 
     [SerializeField]
-    private HealthBar healthBarLeft;
-    [SerializeField]
-    private HealthBar healthBarRight;
+    private CarPhysics[] defaultCarsList;
 
     [SerializeField]
-    private CarPhysics defaultPlayerOne;
-    [SerializeField]
-    private CarPhysics defaultPlayerTwo;
+    private GunController[] defaultGunsList;
+
     private List<SpawnLocation> spawnLocations;
     private GameOverManager gameOverManager;
 
-
-    // TODO: Move in something separate from this script.
     [SerializeField]
-    Camera carOneCamera;
+    private int carCount = 2;
 
-    [SerializeField]
-    Camera carTwoCamera;
 
     public void Awake()
     {
@@ -42,77 +31,48 @@ public class CarSpawner : MonoBehaviour {
     /// </summary>
     public void GamePreparation()
     {
-        CarDataTransfer[] playersInformation = FindObjectsOfType<CarDataTransfer>();
 
+        CarDataTransfer[] playersInformation = FindObjectsOfType<CarDataTransfer>();
         if (playersInformation.Length == 0) // Probably running this from the editor. Simulate cars.
         {
             SimulateCars();
         }
 
-        /* TODO
-         * Create random spawnLocations if players are more than spawnLocations
-        */
+        playersInformation = FindObjectsOfType<CarDataTransfer>();
+
+        List<HealthBar> healthBars = FindObjectsOfType<HealthBar>().ToList();
+        healthBars = healthBars.OrderBy(x => x.GetComponent<CarTag>().carTag).ToList();
 
         for (int i = 0; i < playersInformation.Length; i++)
         {
             CarDataTransfer carData = playersInformation[i];
             if (!carData.hasData)
             {
-                Debug.LogError(carData.name + " has no data in itself! Skipping instantiation. Shouldn't ever happen.");
+                Debug.LogError(carData.name + " has no data in itself! Skipping instantiation. [Shouldn't ever happen].");
                 continue;
             }
-
-            SpawnLocation spawnLocation = GetSpawnLocation();
-            Vector3 spawnPosition = spawnLocation.transform.position;
-            Quaternion spawnRotation = spawnLocation.transform.rotation;
 
             CarPhysics carInfo = carData.car;
             GunController gunInfo = carData.gun;
 
+            SpawnLocation spawnLocation = GetSpawnLocation();
+            Vector3 spawnPosition = spawnLocation.transform.position;
+            Quaternion spawnRotation = spawnLocation.transform.rotation;            
+
             CarPhysics car = Instantiate(carInfo, spawnPosition, spawnRotation);
             GunController gun = Instantiate(gunInfo, car.transform.position + car.GetComponent<CarPhysics>().gunPosition, Quaternion.identity);
             SetGunParent(gun, car);
-            // TODO: Rework whole system to include more than 2 cars. Make it a lot more dynamic
-            car.horizontalInputAxis = "Horizontal" + carData.GetIndex();
-            car.verticalInputAxis = "Vertical" + carData.GetIndex();
-            gun.activationKey = "Fire" + carData.GetIndex();
+            
+            car.horizontalInputAxis = "Horizontal" + carData.index;
+            car.verticalInputAxis = "Vertical" + carData.index;
+            gun.activationKey = "Fire" + carData.index;
 
-            if (carData.GetIndex() == 0)
-            {
-                healthBarLeft.car = car;
-                gameOverManager.carOne = car;
-                carOneCamera.GetComponent<FollowCamera>().obj = car.gameObject;
-            }
-            else if (carData.GetIndex() == 1)
-            {
-                healthBarRight.car = car;
-                gameOverManager.carTwo = car;
-                carTwoCamera.GetComponent<FollowCamera>().obj = car.gameObject;
-            }
-            else
-            {
-                throw new NotImplementedException("More than 2 cars not supported!");
-            }
-            // gun.transform.LookAt(car.transform.up);
-            /*//* Set movement keys
-            car.GetComponent<CarPhysics>().forward = forward;
-            car.GetComponent<CarPhysics>().left = left;
-            car.GetComponent<CarPhysics>().right = right;
-            car.GetComponent<CarPhysics>().back = backwards;
-            print("Car " + carName + " instantiated!"); */
+            CarTag tag = car.gameObject.AddComponent<CarTag>();
+            tag.carTag = carData.index;
 
-            // Spawn the gun.
-            /*
-            print("Gun instantiated!");
-
-            // Set firing key
-            gun.GetComponent<GunController>().activationKey = activationKey;
-            gun.transform.SetParent(carParent.transform);
-            */
-            Destroy(carData);
+            healthBars[i].SetTargetCar(car);
+            gameOverManager.carList.Add(car);
         }
-
-        Destroy(gameObject);
     }
 
     private static void SetGunParent(GunController gun, CarPhysics car)
@@ -130,33 +90,23 @@ public class CarSpawner : MonoBehaviour {
     // TODO: Remove when deploying to play store
     private void SimulateCars()
     {
-
-        // Note: BAD PRACTICE.
-        // SPAGHETTI CODE INCOMING
-        // <Brace yourselves>
-
-        // Spawn car one
-        SpawnLocation spawnLocationOne = GetSpawnLocation();
-        Vector3 spawnPositionOne = spawnLocationOne.transform.position;
-        Quaternion spawnRotationOne = spawnLocationOne.transform.rotation;
-        CarPhysics carOne = Instantiate(defaultPlayerOne, spawnPositionOne, spawnRotationOne);
-
-
-        // Spawn car two
-        SpawnLocation spawnLocationTwo = GetSpawnLocation();
-        Vector3 spawnPositionTwo = spawnLocationTwo.transform.position;
-        Quaternion spawnRotationTwo = spawnLocationTwo.transform.rotation;
-        CarPhysics carTwo = Instantiate(defaultPlayerTwo, spawnPositionTwo, spawnRotationTwo);
-
-        healthBarLeft.car = carOne;
-        healthBarRight.car = carTwo;
         
-        gameOverManager.carOne = carOne;
-        gameOverManager.carTwo = carTwo;
-
-
-        carOneCamera.GetComponent<FollowCamera>().obj = carOne.gameObject;
-        carTwoCamera.GetComponent<FollowCamera>().obj = carTwo.gameObject;
+        if (defaultCarsList.Length == 0 || defaultGunsList.Length == 0)
+        {
+            Debug.LogError("Car spawner cannot simulate cars when no default cars or guns are set!");
+            return;
+        }
+        Debug.LogWarning("Simulating cars!");
+        for (int i = 0; i < carCount; i++)
+        {
+            GameObject carDataObj = Instantiate(new GameObject("CarData" + i), Vector3.zero, Quaternion.identity);
+            CarDataTransfer carData = carDataObj.AddComponent<CarDataTransfer>() as CarDataTransfer;
+            carData.car = defaultCarsList[Random.Range(0, defaultCarsList.Length)];
+            carData.gun = defaultGunsList[Random.Range(0, defaultGunsList.Length)];
+            carData.hasData = true;
+            carData.index = i;
+            Debug.LogWarning("Simulate cardata transfer!");
+        }
     }
 
     private SpawnLocation GetSpawnLocation()
