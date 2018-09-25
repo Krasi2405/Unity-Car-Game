@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 
+[RequireComponent(typeof(Health))]
 public class CarPhysics : MonoBehaviour
 {
 
@@ -11,13 +12,8 @@ public class CarPhysics : MonoBehaviour
     public float linearDrag = 2f;
     public float weight = 2f;
     public float brakeForce = 2f;
-    public float maxHealth = 100;
-    public float currentHealth;
     public float maxSpeed = 100f;
     public float turnPower = 1f;
-    public int maxAmmo = 10;
-    public int currentAmmo;
-    public bool controlledByPlayer = false;
     public Vector3 gunPosition;
 
     
@@ -30,7 +26,6 @@ public class CarPhysics : MonoBehaviour
 
     private Rigidbody2D rigidbody;
     private bool gas;
-    private ParticleSystem smoke;
 
     private Collider2D colliderLeft;
     private Collider2D colliderRight;
@@ -46,37 +41,17 @@ public class CarPhysics : MonoBehaviour
         rigidbody.angularDrag = angularDrag;
         rigidbody.drag = linearDrag;
         rigidbody.gravityScale = 0f;
-
-        smoke = GetComponentInChildren<ParticleSystem>();
-        smoke.Stop();
-
-        currentHealth = maxHealth;
-        currentAmmo = maxAmmo;
     }
 
     void FixedUpdate()
     {
         currentVelocity = rigidbody.velocity.sqrMagnitude;
-        if (currentHealth > maxHealth)
-        {
-            currentHealth = maxHealth;
-        }
-
-        if(currentAmmo > maxAmmo)
-        {
-            currentAmmo = maxAmmo;
-        }
 
         gas = false;
         BasicMovementControls();
-
     }
 
-    public void TakeDamage(float damage)
-    {
-        currentHealth -= damage;
-        SmokeState();
-    }
+    
 
 
     void BasicMovementControls()
@@ -88,58 +63,42 @@ public class CarPhysics : MonoBehaviour
                         (transform.up.x + rigidbody.velocity.normalized.x) / 2,
                         (transform.up.y + rigidbody.velocity.normalized.y) / 2).normalized;
         
-        if (controlledByPlayer)
+        float horizontalInput = CrossPlatformInputManager.GetAxis(horizontalInputAxis);
+        float verticalInput = CrossPlatformInputManager.GetAxis(verticalInputAxis);
+        // Debug.Log("Horizontal: " + horizontalInput + "\nVertical: " + verticalInput);
+        if (horizontalInput <= -0.05)
         {
-            float horizontalInput = CrossPlatformInputManager.GetAxis(horizontalInputAxis);
-            float verticalInput = CrossPlatformInputManager.GetAxis(verticalInputAxis);
-            // Debug.Log("Horizontal: " + horizontalInput + "\nVertical: " + verticalInput);
-            if (horizontalInput <= -0.05)
+            rigidbody.AddTorque(GetTorque() * -horizontalInput);
+        }
+        else if (horizontalInput >= 0.05)
+        {
+            rigidbody.AddTorque(-GetTorque() * horizontalInput);
+        }
+        if (verticalInput >= 0.05)
+        {
+            if (currentVelocity < maxSpeed)
             {
-                rigidbody.AddTorque(GetTorque() * -horizontalInput);
+                rigidbody.AddForce(transform.up * power * verticalInput);
             }
-            else if (horizontalInput >= 0.05)
+            // When gas is true its harder to turn the car.
+            gas = true;
+        }
+        if (verticalInput <= -0.05)
+        {
+            // Brakes
+            if (currentVelocity > 5)
             {
-                rigidbody.AddTorque(-GetTorque() * horizontalInput);
+                Vector2 brake_direction = velocityDirection;
+                rigidbody.AddForce(-brake_direction * power * (brakeForce / 10) * -verticalInput);
             }
-            if (verticalInput >= 0.05)
+            // Reverse movement
+            else
             {
-                if (currentVelocity < maxSpeed)
-                {
-                    rigidbody.AddForce(transform.up * power * verticalInput);
-                }
-                // When gas is true its harder to turn the car.
-                gas = true;
-            }
-            if (verticalInput <= -0.05)
-            {
-                // Brakes
-                if (currentVelocity > 5)
-                {
-                    Vector2 brake_direction = velocityDirection;
-                    rigidbody.AddForce(-brake_direction * power * (brakeForce / 10) * -verticalInput);
-                }
-                // Reverse movement
-                else
-                {
-                    rigidbody.AddForce(transform.up * -power * -verticalInput);
-                }
+                rigidbody.AddForce(transform.up * -power * -verticalInput);
             }
         }
     }
 
-    public bool CanConsumeAmmo(int ammo)
-    {
-        if (ammo > currentAmmo)
-        {
-            return false;
-        }
-        else
-        {
-            currentAmmo -= ammo;
-            return true;
-        }
-                
-    }
 
     float GetTorque()
     {
@@ -167,33 +126,6 @@ public class CarPhysics : MonoBehaviour
             torque /= 1.6f;
         }
         return torque;
-    }
-
-
-    public void SmokeState()
-    {
-        
-        if(currentHealth <= maxHealth / 4)
-        {
-            // TODO: Add burn effects.
-            smoke.Play();
-        }
-        else if (currentHealth <= maxHealth / 2)
-        {
-            smoke.Play();
-        }
-        else
-        {
-            smoke.Stop();
-        }
-    }
-
-
-    public void ActivateDeathSequence()
-    {
-        // TODO: activate particles.
-        Debug.LogWarning(name + " is dead!");
-        Destroy(this);
     }
 
 

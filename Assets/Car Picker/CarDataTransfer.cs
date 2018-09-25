@@ -7,8 +7,8 @@ public class CarDataTransfer : MonoBehaviour {
     [SerializeField]
     public int index;
 
-    public CarPhysics car;
-    public GunController gun;
+    public Car car;
+    public GunBase gun;
 
     public bool hasData = false;
 

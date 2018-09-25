@@ -15,14 +15,39 @@ public class CarCollider : MonoBehaviour {
     private float damageCoefficientOnPart = 1f;
 
     [SerializeField]
-    public CarPhysics car { get; private set; }
+    public Car car { get; private set; }
 
     private void Start()
     {
-        car = transform.parent.GetComponent<CarPhysics>();
+        car = transform.parent.GetComponent<Car>();
+    }
+    
+    public void TakeDamage(float damage)
+    {
+        car.health.TakeDamage(damage * damageCoefficientOnPart);
     }
 
-    void Update () {
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        CarPhysics enemyCar = collision.gameObject.GetComponent<CarPhysics>();
+        if (!enemyCar) return;
+
+        UpdateCarProjection();
+        Vector2 enemyVelocity = enemyCar.GetComponent<Rigidbody2D>().velocity;
+        Vector3 enemyVelocity3D = new Vector3(enemyVelocity.x, enemyVelocity.y, 0);
+
+        // TODO: use dot product, since i now actually understand how it works, instead of this piece of shit.
+
+        float damage = Vector3.Project(enemyVelocity3D, projectTowards).sqrMagnitude;
+        Debug.Log("Damage coefficient of hit on " + name + " by " + enemyCar.name + ": " + damage + "(" + Vector3.Project(enemyVelocity3D, projectTowards) + ")");
+        Debug.Log("Enemy velocity: " + enemyVelocity3D);
+
+        TakeDamage(damage / 10);
+    }
+
+
+    private void UpdateCarProjection()
+    {
         Transform carTransform = car.transform;
         if (option == ProjectTowards.Forward)
         {
@@ -36,54 +61,15 @@ public class CarCollider : MonoBehaviour {
         {
             projectTowards = -carTransform.right;
         }
-        else if(option == ProjectTowards.Right)
+        else if (option == ProjectTowards.Right)
         {
             projectTowards = carTransform.right;
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Debug.Log(name + " of " + transform.parent.name + " hit by " + collision.gameObject.name)
-        CarPhysics enemyCar = collision.gameObject.GetComponent<CarPhysics>();
-        if (!enemyCar) return;
-        Vector2 enemyVelocity = enemyCar.GetComponent<Rigidbody2D>().velocity;
-        Vector3 enemyVelocity3D = new Vector3(enemyVelocity.x, enemyVelocity.y, 0);
-        
-        float damage = Vector3.Project(enemyVelocity3D, projectTowards).sqrMagnitude;
-        Debug.Log("Damage coefficient of hit on " + name + " by " + enemyCar.name + ": " + damage + "(" + Vector3.Project(enemyVelocity3D, projectTowards) + ")");
-        Debug.Log("Enemy velocity: " + enemyVelocity3D);
-
-        TakeCollisionDamage(damage);
-    }
 
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, transform.position + projectTowards / 10);
-    }
-
-    private void TakeDamage(float damage)
-    {
-        car.TakeDamage(damage * damageCoefficientOnPart);
-    }
-
-    public void TakeCollisionDamage(float damage)
-    {
-        TakeDamage(damage / 10);
-    }
-
-    public void TakeFireDamage(float damage)
-    {
-        TakeDamage(damage / 5);
-    }
-
-    public void TakeExplosiveDamage(float damage)
-    {
-        TakeDamage(damage / 4);
-    }
-
-    public void TakePenetrationDamage(float damage)
-    {
-        TakeDamage(damage / 5);
     }
 }

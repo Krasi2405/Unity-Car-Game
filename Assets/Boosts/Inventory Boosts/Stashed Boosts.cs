@@ -9,7 +9,7 @@ public class StashedBoosts : BoostBase {
 
     InventoryBoost boost;
 
-    protected override void ApplyEffect(CarPhysics car)
+    protected override void ApplyEffect(Car car)
     {
         InventoryBoost currentBoost = car.GetComponentInChildren<InventoryBoost>();
         if (currentBoost) 

@@ -9,7 +9,7 @@ public class EventBoost : BoostBase {
 
     EventEffect eventEffect;
 
-    protected override void ApplyEffect(CarPhysics car)
+    protected override void ApplyEffect(Car car)
     {
         Instantiate(eventEffect);
     }

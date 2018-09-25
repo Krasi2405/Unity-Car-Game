@@ -26,11 +26,11 @@ public abstract class BoostBase : MonoBehaviour {
             if (pickupParticleSystem)
                 Instantiate(pickupParticleSystem, transform.position, Quaternion.identity);
 
-            ApplyEffect(carCollider.car);
+            ApplyEffect(carCollider.gameObject.GetComponent<Car>());
             isBeingDestroyed = true;
             Destroy(gameObject, 0.1f);
         }
     }
 
-    protected abstract void ApplyEffect(CarPhysics car);
+    protected abstract void ApplyEffect(Car car);
 }

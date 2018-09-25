@@ -5,10 +5,9 @@ using System.Linq;
 public class CarSpawner : MonoBehaviour {
 
     [SerializeField]
-    private CarPhysics[] defaultCarsList;
-
+    private CarList defaultCarsList;
     [SerializeField]
-    private GunController[] defaultGunsList;
+    private GunList defaultGunsList;
 
     private List<SpawnLocation> spawnLocations;
     private GameOverManager gameOverManager;
@@ -24,7 +23,7 @@ public class CarSpawner : MonoBehaviour {
         GamePreparation();
     }
 
-    private Dictionary<CarPhysics, GunController> carGunDict;
+    private Dictionary<CarPhysics, GunBase> carGunDict;
 
     /// <summary>
     /// Called by button before loading the game scene.
@@ -41,7 +40,14 @@ public class CarSpawner : MonoBehaviour {
         playersInformation = FindObjectsOfType<CarDataTransfer>();
 
         List<HealthBar> healthBars = FindObjectsOfType<HealthBar>().ToList();
-        healthBars = healthBars.OrderBy(x => x.GetComponent<CarTag>().carTag).ToList();
+        try
+        {
+            healthBars = healthBars.OrderBy(x => x.GetComponent<CarTag>().carTag).ToList();
+        }
+        catch(System.NullReferenceException)
+        {
+            Debug.LogWarning("Health bars have no CarTag so they are distributed randomly!");
+        }
 
         for (int i = 0; i < playersInformation.Length; i++)
         {
@@ -52,36 +58,36 @@ public class CarSpawner : MonoBehaviour {
                 continue;
             }
 
-            CarPhysics carInfo = carData.car;
-            GunController gunInfo = carData.gun;
+            Car carInfo = carData.car;
+            GunBase gunInfo = carData.gun;
 
             SpawnLocation spawnLocation = GetSpawnLocation();
             Vector3 spawnPosition = spawnLocation.transform.position;
             Quaternion spawnRotation = spawnLocation.transform.rotation;            
 
-            CarPhysics car = Instantiate(carInfo, spawnPosition, spawnRotation);
-            GunController gun = Instantiate(gunInfo, car.transform.position + car.GetComponent<CarPhysics>().gunPosition, Quaternion.identity);
+            Car car = Instantiate(carInfo, spawnPosition, spawnRotation);
+            GunBase gun = Instantiate(gunInfo, car.transform.position + car.GetComponent<CarPhysics>().gunPosition, Quaternion.identity);
             SetGunParent(gun, car);
             
-            car.horizontalInputAxis = "Horizontal" + carData.index;
-            car.verticalInputAxis = "Vertical" + carData.index;
-            gun.activationKey = "Fire" + carData.index;
+            car.carPhysics.horizontalInputAxis = "Horizontal" + carData.index;
+            car.carPhysics.verticalInputAxis = "Vertical" + carData.index;
+            gun.SetActivationKey("Fire" + carData.index);
 
             CarTag tag = car.gameObject.AddComponent<CarTag>();
             tag.carTag = carData.index;
 
-            healthBars[i].SetTargetCar(car);
+            car.health.SetHealthBar(healthBars[i]);
             gameOverManager.carList.Add(car);
         }
     }
 
-    private static void SetGunParent(GunController gun, CarPhysics car)
+    private static void SetGunParent(GunBase gun, Car car)
     {
         Vector3 gunPosition = gun.transform.localPosition;
         Quaternion gunRotation = gun.transform.localRotation;
         Vector3 gunScale = gun.transform.localScale;
         gun.transform.parent = car.transform;
-        gun.transform.localPosition = car.gunPosition;
+        gun.transform.localPosition = car.carPhysics.gunPosition;
         gun.transform.localScale = gunScale;
         gun.transform.localRotation = gunRotation;
     }
@@ -91,7 +97,7 @@ public class CarSpawner : MonoBehaviour {
     private void SimulateCars()
     {
         
-        if (defaultCarsList.Length == 0 || defaultGunsList.Length == 0)
+        if (defaultCarsList.GetCarList().Length == 0 || defaultGunsList.GetGunList().Length == 0)
         {
             Debug.LogError("Car spawner cannot simulate cars when no default cars or guns are set!");
             return;
@@ -101,8 +107,8 @@ public class CarSpawner : MonoBehaviour {
         {
             GameObject carDataObj = Instantiate(new GameObject("CarData" + i), Vector3.zero, Quaternion.identity);
             CarDataTransfer carData = carDataObj.AddComponent<CarDataTransfer>() as CarDataTransfer;
-            carData.car = defaultCarsList[Random.Range(0, defaultCarsList.Length)];
-            carData.gun = defaultGunsList[Random.Range(0, defaultGunsList.Length)];
+            carData.car = defaultCarsList.GetCarList()[Random.Range(0, defaultCarsList.GetCarList().Length)];
+            carData.gun = defaultGunsList.GetGunList()[Random.Range(0, defaultGunsList.GetGunList().Length)];
             carData.hasData = true;
             carData.index = i;
             Debug.LogWarning("Simulate cardata transfer!");

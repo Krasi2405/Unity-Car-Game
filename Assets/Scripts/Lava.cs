@@ -9,7 +9,7 @@ public class Lava : Liquid {
         CarCollider carCollider = collision.GetComponent<CarCollider>();
         if(carCollider)
         {
-            carCollider.TakeFireDamage(damagePerSecond * Time.deltaTime);
+            carCollider.TakeDamage(damagePerSecond * Time.deltaTime);
         }
     }
 }

@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour {
-
-    private CarPhysics car;
-    private float maxHitPoints;
-    private float currentHP;
+    
     private float maxBarFilled;
 
     [SerializeField]
@@ -19,26 +16,14 @@ public class HealthBar : MonoBehaviour {
             maxBarFilled = gameObject.transform.localScale.x;
         else
             maxBarFilled = gameObject.transform.localScale.y;
-
-        
     }
 
-    void Update () {
-        if (!car) return;
-        currentHP = car.currentHealth;
-        float healthBarFilledPercent = maxBarFilled / maxHitPoints * currentHP;
 
-        if (healthBarFilledPercent < 0)
-            healthBarFilledPercent = 0;
+    public void UpdateHealthBar(float currentHealth, float maxHealth)
+    {
+        float healthBarFilledPercent = maxBarFilled / maxHealth * currentHealth;
 
-        else if(healthBarFilledPercent <= maxBarFilled / 4)
-            gameObject.GetComponent<Image>().color = Color.red;
-
-        else if(healthBarFilledPercent <= maxBarFilled / 2)
-            gameObject.GetComponent<Image>().color = Color.yellow;
-
-        else
-            gameObject.GetComponent<Image>().color = Color.green;
+        ChangeColor(healthBarFilledPercent);
 
         Vector3 scale;
         if (isHorizontal)
@@ -46,11 +31,26 @@ public class HealthBar : MonoBehaviour {
         else
             scale = new Vector3(gameObject.transform.localScale.x, healthBarFilledPercent, 0);
         gameObject.transform.localScale = scale;
-	}
+    }
 
-    public void SetTargetCar(CarPhysics car)
+
+    private void ChangeColor(float healthBarFilledPercent)
     {
-        this.car = car;
-        maxHitPoints = car.maxHealth;
+        if (healthBarFilledPercent < 0)
+        {
+            healthBarFilledPercent = 0;
+        }
+        else if (healthBarFilledPercent <= maxBarFilled / 4)
+        {
+            gameObject.GetComponent<Image>().color = Color.red;
+        }
+        else if (healthBarFilledPercent <= maxBarFilled / 2)
+        {
+            gameObject.GetComponent<Image>().color = Color.yellow;
+        }
+        else
+        {
+            gameObject.GetComponent<Image>().color = Color.green;
+        }
     }
 }

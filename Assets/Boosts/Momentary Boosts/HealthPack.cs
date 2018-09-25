@@ -7,11 +7,11 @@ public class HealthPack : MomentaryBoosts {
     public int staticHealthGain = 5;
     public int percentMissingHealthGain = 10;
 
-    protected override void Effect(CarPhysics car)
+    protected override void Effect(Car car)
     {
-        car.currentHealth += 
-            (Mathf.Abs(car.currentHealth - car.maxHealth) * percentMissingHealthGain / 100)
+        float healAmount = 
+            (Mathf.Abs(car.health.GetCurrentHealth() - car.health.GetMaxHealth()) * percentMissingHealthGain / 100)
             + staticHealthGain;
-        car.SmokeState();
+        car.health.Heal(healAmount);
     }
 }

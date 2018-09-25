@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class CarChooser : MonoBehaviour {
-    [SerializeField] private CarPhysics[] cars;
-    [SerializeField] private GunController[] guns;
+    [SerializeField] private CarList carList;
+    [SerializeField] private GunList gunList;
     [SerializeField] private bool flipImages = false;
     [SerializeField] private CarDataTransfer dataTransferAgent;
 
-    public CarPhysics selectedCar { get; private set; }
-    public GunController selectedGun { get; private set; }
+    public Car selectedCar { get; private set; }
+    public GunBase selectedGun { get; private set; }
 
 
     private int carCounter = 0;
@@ -63,7 +63,7 @@ public class CarChooser : MonoBehaviour {
 
     private void SetCarInfo()
     {
-        selectedCar = cars[carCounter];
+        selectedCar = carList.GetCarList()[carCounter];
         dataTransferAgent.car = selectedCar;    
 
 
@@ -73,13 +73,12 @@ public class CarChooser : MonoBehaviour {
         }
 
         carImage.sprite = selectedCar.GetComponent<SpriteRenderer>().sprite;
-        carText.text = selectedCar.GetComponent<TextInfoBase>().GetInformation();
     }
 
 
     private void SetGunInfo()
     {
-        selectedGun = guns[gunCounter];
+        selectedGun = gunList.GetGunList()[gunCounter];
         dataTransferAgent.gun = selectedGun;
 
         if (dataTransferAgent.car != null)
@@ -89,34 +88,33 @@ public class CarChooser : MonoBehaviour {
         }
 
         gunImage.sprite = selectedGun.GetComponent<SpriteRenderer>().sprite;
-        gunText.text = selectedGun.GetComponent<TextInfoBase>().GetInformation();
     }
 
 
     public void IncrementCarSelection()
     {
-        selectedCar = IncrementObject(cars, ref carCounter);
+        selectedCar = IncrementObject(carList.GetCarList(), ref carCounter);
         SetCarInfo();
     }
 
 
     public void DecrementCarSelection()
     {
-        selectedCar = DecrementObject(cars, ref carCounter);
+        selectedCar = DecrementObject(carList.GetCarList(), ref carCounter);
         SetCarInfo();
     }
 
 
     public void DecrementGunSelection()
     {
-        selectedGun = DecrementObject(guns, ref gunCounter);
+        selectedGun = DecrementObject(gunList.GetGunList(), ref gunCounter);
         SetGunInfo();
     }
 
 
     public void IncrementGunSelection()
     {
-        selectedGun = IncrementObject(guns, ref gunCounter);
+        selectedGun = IncrementObject(gunList.GetGunList(), ref gunCounter);
         SetGunInfo();
     }
 }

@@ -6,12 +6,8 @@ public class AmmoPack : MomentaryBoosts {
 
     public int ammoInPack = 5;
 
-    protected override void Effect(CarPhysics car)
+    protected override void Effect(Car car)
     {
-        car.currentAmmo += ammoInPack;
-        if(car.currentAmmo > car.maxAmmo)
-        {
-            car.currentAmmo = car.maxAmmo;
-        }
+        car.gun.AddAmmo(ammoInPack);
     }
 }
