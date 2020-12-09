@@ -3,19 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour {
+public static class LevelManager {
 
-	public void LoadLevel(string name)
+    public enum Scene
     {
-        SceneManager.LoadScene(name);
+        MainMenu,
+        PickerLocal,
+        GameLocal,
+        PickerMultiplayer,
+        GameMultiplayer
     }
 
-    public void LoadNextLevel()
+	public static void LoadScene(Scene scene)
+    {
+        SceneManager.LoadScene(scene.ToString());
+    }
+
+    public static void LoadNextScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
-    public void QuitGame()
+    public static void QuitGame()
     {
         Application.Quit();
     }

@@ -20,17 +20,17 @@ public class CarSpawner : MonoBehaviour {
     {
         spawnLocations = FindObjectsOfType<SpawnLocation>().ToList();
         gameOverManager = FindObjectOfType<GameOverManager>();
-        GamePreparation();
     }
 
     private Dictionary<CarPhysics, GunBase> carGunDict;
 
+    /*
     /// <summary>
     /// Called by button before loading the game scene.
     /// </summary>
     public void GamePreparation()
     {
-
+        
         CarDataTransfer[] playersInformation = FindObjectsOfType<CarDataTransfer>();
         if (playersInformation.Length == 0) // Probably running this from the editor. Simulate cars.
         {
@@ -122,4 +122,6 @@ public class CarSpawner : MonoBehaviour {
         spawnLocations.RemoveAt(randomIndex);
         return spawn;
     }
+
+    */
 }

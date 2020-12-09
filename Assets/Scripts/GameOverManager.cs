@@ -10,16 +10,9 @@ public class GameOverManager : MonoBehaviour {
 
     public int winningPlayerIndex { get; private set; }
 
-    private LevelManager levelManager;
-
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
-    }
-
-    void Start()
-    {
-        levelManager = FindObjectOfType<LevelManager>();
     }
 
     void Update () {
@@ -40,9 +33,4 @@ public class GameOverManager : MonoBehaviour {
             }
         }
 	}
-
-    void EndGame()
-    {
-        levelManager.LoadLevel("Game Over");
-    }
 }
