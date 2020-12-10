@@ -5,30 +5,33 @@ using UnityEngine;
 [RequireComponent(typeof(Health))]
 [RequireComponent(typeof(CarPhysics))]
 public class Car : MonoBehaviour {
-    
-    public Health health { get; private set; }
-    public CarPhysics carPhysics { get; private set; }
-    public GunBase gun { get; private set; }
+
 
     [SerializeField]
     private AudioClip destructionSound;
 
-    [SerializeField]
-    private 
+    private Health health;
+    private CarPhysics carPhysics;
+
+    private GunBase gun;
+
 
 	void Awake () {
         health = GetComponent<Health>();
         carPhysics = GetComponent<CarPhysics>();
-        gun = GetComponentInChildren<GunBase>();
 	}
 	
+
+    public void SpawnGun(GunSO gunSO)
+    {
+        gun = Instantiate(gunSO.prefab, transform.position, Quaternion.identity);
+    }
 
     public void ActivateDeathSequence()
     {
         Destroy(carPhysics);
 
         Invoke("MakeCarImmovable", 1.5f);
-        Debug.LogWarning("Car " + gameObject.name + " is dead!");
     }
 
 

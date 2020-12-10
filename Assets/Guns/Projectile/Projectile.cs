@@ -19,7 +19,7 @@ public abstract class Projectile : ProjectileBase {
         }
 
         CarCollider carCollider = collision.GetComponent<CarCollider>();
-        if (carCollider && carCollider.car != owner)
+        if (carCollider && carCollider.GetAttachedCar() != owner)
         {
             ActivateEffect(carCollider.GetComponentInParent<Car>(), carCollider);
             Destroy(gameObject);

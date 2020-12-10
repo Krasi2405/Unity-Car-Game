@@ -43,7 +43,7 @@ public class Selector : MonoBehaviour
         previousItemButton.onClick.AddListener(SelectPrevious);
     }
 
-    private void SelectNext()
+    public void SelectNext()
     {
         index++;
         if (index >= optionsList.Count)
@@ -54,7 +54,7 @@ public class Selector : MonoBehaviour
     }
 
 
-    private void SelectPrevious()
+    public void SelectPrevious()
     {
         index--;
         if (index < 0)

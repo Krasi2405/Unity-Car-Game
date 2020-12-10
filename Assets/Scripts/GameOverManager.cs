@@ -10,10 +10,6 @@ public class GameOverManager : MonoBehaviour {
 
     public int winningPlayerIndex { get; private set; }
 
-    void Awake()
-    {
-        DontDestroyOnLoad(gameObject);
-    }
 
     void Update () {
 		if(carList.Count == 1)
@@ -25,7 +21,7 @@ public class GameOverManager : MonoBehaviour {
         {
             foreach(Car car in carList)
             {
-                if(car.health.GetCurrentHealth() <= 0)
+                if(car.GetComponent<Health>().GetCurrentHealth() <= 0)
                 {
                     carList.Remove(car);
                     car.ActivateDeathSequence();

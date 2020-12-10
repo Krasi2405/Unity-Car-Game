@@ -13,7 +13,7 @@ public class Flame : AreaOfEffectProjectile
     protected override void ActivateEffect(Car target)
     {
         if (target == owner) return;
-        target.health.TakeDamage(damagePerSecond * Time.deltaTime);
+        target.GetComponent<Health>().TakeDamage(damagePerSecond * Time.deltaTime);
     }
     
 }

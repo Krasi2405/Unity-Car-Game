@@ -30,6 +30,6 @@ public class ChargingLaserBallProjectile : ChargingProjectile {
     protected override void ActivateEffect(Car target, CarCollider carCollider)
     {
         // TODO: damage based on car collider
-        target.health.TakeDamage(damage);
+        target.GetComponent<Health>().TakeDamage(damage);
     }
 }

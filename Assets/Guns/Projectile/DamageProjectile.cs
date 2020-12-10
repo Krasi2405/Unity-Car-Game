@@ -9,6 +9,6 @@ public class DamageProjectile : Projectile
 
     protected override void ActivateEffect(Car target, CarCollider carCollider)
     {
-        target.health.TakeDamage(damage);
+        target.GetComponent<Health>().TakeDamage(damage);
     }
 }

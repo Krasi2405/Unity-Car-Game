@@ -15,7 +15,7 @@ public class CarCollider : MonoBehaviour {
     private float damageCoefficientOnPart = 1f;
 
     [SerializeField]
-    public Car car { get; private set; }
+    private Car car;
 
     private void Start()
     {
@@ -24,7 +24,7 @@ public class CarCollider : MonoBehaviour {
     
     public void TakeDamage(float damage)
     {
-        car.health.TakeDamage(damage * damageCoefficientOnPart);
+        car.GetComponent<Health>().TakeDamage(damage * damageCoefficientOnPart);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -71,5 +71,11 @@ public class CarCollider : MonoBehaviour {
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(transform.position, transform.position + projectTowards / 10);
+    }
+
+
+    public Car GetAttachedCar()
+    {
+        return car;
     }
 }

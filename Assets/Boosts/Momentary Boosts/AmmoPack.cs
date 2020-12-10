@@ -8,6 +8,6 @@ public class AmmoPack : MomentaryBoosts {
 
     protected override void Effect(Car car)
     {
-        car.gun.AddAmmo(ammoInPack);
+        car.GetComponent<GunBase>().AddAmmo(ammoInPack);
     }
 }

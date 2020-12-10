@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 public class PickerSystem : MonoBehaviour
 {
+    public event System.EventHandler OnReady;
+    public event System.EventHandler OnCancelReady;
+
+
     [SerializeField]
     private int playerIndex;
 
@@ -43,6 +47,7 @@ public class PickerSystem : MonoBehaviour
 
     private int selectedCarIndex;
     private int selectedGunIndex;
+    private bool isReady = false;
 
     private void Awake()
     {
@@ -85,7 +90,13 @@ public class PickerSystem : MonoBehaviour
             gunSelector.gameObject.SetActive(false);
             readyPanel.gameObject.SetActive(true);
             selectButton.gameObject.SetActive(false);
+            
             currentStage = Stage.Ready;
+            isReady = true;
+            OnReady?.Invoke(this, System.EventArgs.Empty);
+
+            PlayerPrefs.SetInt("SelectedCar" + playerIndex, selectedCarIndex);
+            PlayerPrefs.SetInt("SelectedGun" + playerIndex, selectedGunIndex);
         }
     }
 
@@ -107,9 +118,14 @@ public class PickerSystem : MonoBehaviour
             selectButton.gameObject.SetActive(true);
             currentStage = Stage.PickGun;
 
-            PlayerPrefs.SetInt("SelectedCar" + playerIndex, selectedCarIndex);
-            PlayerPrefs.SetInt("SelectedGun" + playerIndex, selectedGunIndex);
+            isReady = false;
+            OnCancelReady?.Invoke(this, System.EventArgs.Empty);
         }
+    }
+
+    public bool IsReady()
+    {
+        return isReady;
     }
 
 }
