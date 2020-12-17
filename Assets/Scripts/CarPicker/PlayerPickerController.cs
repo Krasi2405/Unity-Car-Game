@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerPickerController : MonoBehaviour
 {
     [SerializeField]
-    List<PickerSystem> playerPickerSystems;
+    List<PickerSystem> playerPickerSystems = null;
 
     private void Awake()
     {

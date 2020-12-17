@@ -6,13 +6,13 @@ using UnityEngine.UI;
 public class Selector : MonoBehaviour
 {
     [SerializeField]
-    private Image image;
+    private Image image = null;
 
     [SerializeField]
-    private Button nextItemButton;
+    private Button nextItemButton = null;
 
     [SerializeField]
-    private Button previousItemButton;
+    private Button previousItemButton = null;
 
     private Dictionary<Sprite, Object> selectorDictionary;
     private List<Sprite> optionsList;

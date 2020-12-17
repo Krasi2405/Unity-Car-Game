@@ -5,32 +5,54 @@ using UnityEngine.UI;
 
 public class HealthBar : MonoBehaviour {
     
-    private float maxBarFilled;
+    [SerializeField]
+    private HealthSystem healthSystem = null;
+
+    [SerializeField]
+    private RectTransform bar = null;
+
+    [SerializeField]
+    private Image barImage = null;
+
+    [SerializeField]
+    private GameObject separatorContainer = null;
+
+    [SerializeField]
+    private GameObject separatorStartObject = null;
 
     [SerializeField]
     private bool isHorizontal = true;
 
-    void Start()
+    private static int HEALTH_PER_SEPARATOR = 100;
+
+    public void Setup(HealthSystem newHealthSystem)
     {
-        if (isHorizontal)
-            maxBarFilled = gameObject.transform.localScale.x;
-        else
-            maxBarFilled = gameObject.transform.localScale.y;
+        healthSystem = newHealthSystem;
+        healthSystem.OnDamage += HealthSystem_OnHealthChange;
+        healthSystem.OnHeal += HealthSystem_OnHealthChange;
+        UpdateHealthBar();
+        SetupSeparators();
     }
 
 
-    public void UpdateHealthBar(float currentHealth, float maxHealth)
+    private void HealthSystem_OnHealthChange(object sender, System.EventArgs e)
     {
-        float healthBarFilledPercent = maxBarFilled / maxHealth * currentHealth;
+        UpdateHealthBar();
+    }
+
+    private void UpdateHealthBar()
+    {
+        float currentHealth = healthSystem.GetCurrentHealth();
+        float maxHealth = healthSystem.GetMaxHealth();
+        float healthBarFilledPercent = currentHealth / maxHealth;
+
+        Vector3 scale = isHorizontal ?
+            new Vector3(healthBarFilledPercent, 1, 1)
+            :
+            new Vector3(1, healthBarFilledPercent, 1);
 
         ChangeColor(healthBarFilledPercent);
-
-        Vector3 scale;
-        if (isHorizontal)
-            scale = new Vector3(healthBarFilledPercent, gameObject.transform.localScale.y, 0);
-        else
-            scale = new Vector3(gameObject.transform.localScale.x, healthBarFilledPercent, 0);
-        gameObject.transform.localScale = scale;
+        bar.transform.localScale = scale;
     }
 
 
@@ -40,17 +62,40 @@ public class HealthBar : MonoBehaviour {
         {
             healthBarFilledPercent = 0;
         }
-        else if (healthBarFilledPercent <= maxBarFilled / 4)
+        
+        if (healthBarFilledPercent <= 0.25f)
         {
-            gameObject.GetComponent<Image>().color = Color.red;
+            barImage.color = Color.red;
         }
-        else if (healthBarFilledPercent <= maxBarFilled / 2)
+        else if (healthBarFilledPercent <= 0.5f)
         {
-            gameObject.GetComponent<Image>().color = Color.yellow;
+            barImage.color = Color.yellow;
         }
         else
         {
-            gameObject.GetComponent<Image>().color = Color.green;
+            barImage.color = Color.green;
+        }
+    }
+
+    private void SetupSeparators()
+    {
+        float health = healthSystem.GetMaxHealth();
+        int separatorCount = Mathf.RoundToInt(health / HEALTH_PER_SEPARATOR);
+        float distancePerSeparator = isHorizontal ? bar.rect.width / separatorCount : bar.rect.height / separatorCount;
+
+        for (int i = 1; i < separatorCount; i++)
+        {
+            GameObject separator = Instantiate(separatorStartObject, separatorContainer.transform);
+            Vector3 separatorPosition = separator.transform.position;
+            if (isHorizontal)
+            {
+                separatorPosition.x += i * distancePerSeparator;
+            }
+            else
+            {
+                separatorPosition.y += i * distancePerSeparator;
+            }
+            separator.transform.position = separatorPosition;
         }
     }
 }

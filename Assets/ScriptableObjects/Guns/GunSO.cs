@@ -11,6 +11,9 @@ public class GunSO : ScriptableObject
     public int maxAmmo;
     public float ammoCostPerAction;
     public float fireCooldown;
-    public float velocity;
-    public Projectile projectilePrefab;
+    public GunBase.SpawnLocationMethod spawnLocationMethod = GunBase.SpawnLocationMethod.FirstOnly;
+    public float projectileSpeed;
+    public GunBase.FireSoundMethod fireSoundMethod = GunBase.FireSoundMethod.Continous;
+    public AudioClip gunfireSoundClip;
+    public ProjectileBase projectilePrefab;
 }

@@ -9,32 +9,35 @@ public class PickerSystem : MonoBehaviour
     public event System.EventHandler OnCancelReady;
 
 
-    [SerializeField]
-    private int playerIndex;
+    [SerializeField] 
+    private int playerIndex = 0;
 
-    [SerializeField]
-    private Selector carSelector;
 
-    [SerializeField]
-    private Selector gunSelector;
+    [SerializeField] 
+    private Selector carSelector = null;
+    
+    [SerializeField] 
+    private Selector gunSelector = null;
 
-    [SerializeField]
-    private RectTransform readyPanel;
+    [SerializeField] 
+    private Button selectButton = null;
+    
+    [SerializeField] 
+    private Button backButton = null;
+    
+    [SerializeField] 
+    private Button readyCancelButton = null;
+    
+    [SerializeField] 
+    private RectTransform readyPanel = null;
 
-    [SerializeField]
-    private Button selectButton;
 
-    [SerializeField]
-    private Button backButton;
+    [SerializeField] 
+    private CarList carList = null;
 
-    [SerializeField]
-    private Button readyCancelButton;
+    [SerializeField] 
+    private GunList gunList = null;
 
-    [SerializeField]
-    private CarList carList;
-
-    [SerializeField]
-    private GunList gunList;
 
     private enum Stage
     {

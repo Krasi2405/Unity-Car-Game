@@ -1,32 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameOverManager : MonoBehaviour {
-    
-    public float gameOverCooldown = 2f;
 
-    public List<Car> carList;
+    public event System.EventHandler OnGameOver;
 
-    public int winningPlayerIndex { get; private set; }
+    List<Car> aliveCars;
 
-
-    void Update () {
-		if(carList.Count == 1)
+    private void Start()
+    {
+        aliveCars = FindObjectsOfType<Car>().ToList();
+        foreach(Car car in aliveCars)
         {
-            winningPlayerIndex = carList[0].GetComponent<CarTag>().carTag;
-            Invoke("EndGame", gameOverCooldown);
+            car.GetComponent<HealthSystem>().OnDeath += Car_OnDeath;
         }
-        else
+    }
+
+    private void Car_OnDeath(object sender, System.EventArgs e)
+    {
+        HealthSystem healthSystem = (HealthSystem)(sender);
+        Car deadCar = healthSystem.GetComponent<Car>();
+        aliveCars.Remove(deadCar);
+        if (aliveCars.Count == 1)
         {
-            foreach(Car car in carList)
-            {
-                if(car.GetComponent<Health>().GetCurrentHealth() <= 0)
-                {
-                    carList.Remove(car);
-                    car.ActivateDeathSequence();
-                }
-            }
+            EndGame();
         }
-	}
+    }
+
+    private void EndGame()
+    {
+        GameOverUI gameOverUI = GameOverUI.Instance;
+        gameOverUI.Show();
+        gameOverUI.SetWinner(aliveCars[0]);
+        OnGameOver?.Invoke(this, System.EventArgs.Empty);
+    }
 }

@@ -19,11 +19,6 @@ public static class LevelManager {
         SceneManager.LoadScene(scene.ToString());
     }
 
-    public static void LoadNextScene()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-    }
-
     public static void QuitGame()
     {
         Application.Quit();
